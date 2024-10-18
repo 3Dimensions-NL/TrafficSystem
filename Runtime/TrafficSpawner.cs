@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Collections;
-using FishNet;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
     public class TrafficSpawner : MonoBehaviour
     {
-        [SerializeField] private TrafficSpawnCollection spawnCollection;
-        [SerializeField] TrafficLane laneToSpawnIn;
+        public TrafficSpawnCollection spawnCollection;
+        public TrafficLane laneToSpawnIn;
 
-        [SerializeField] bool spawnAtStart = true;
-        [SerializeField] bool spawnContinuously = false;
-        [SerializeField] float minSpawnTime = 5;
-        [SerializeField] float maxSpawnTime = 15;
-        [SerializeField] private VehicleAi.VehicleState startState = VehicleAi.VehicleState.Driving;
+        public bool spawnAtStart = true;
+        public bool spawnContinuously = true;
+        public float minSpawnTime = 5;
+        public float maxSpawnTime = 15;
+        public VehicleAi.VehicleState startState = VehicleAi.VehicleState.Driving;
 
-        public bool canSpawn; //TODO true when server
+        public bool canSpawn = true; //TODO true when server
 
-        public Action Spawn; //TODO let server listen to this action to spawn a vehicle
-        
-        void OnEnable()
+        public Action<GameObject> OnInstantiateGameObject; 
+
+        private void OnEnable()
         {
             if (Application.isPlaying)
             {
@@ -70,11 +69,14 @@ namespace _3Dimensions.TrafficSystem
         {
             yield return new WaitForSeconds(Random.Range(minSpawnTime, maxSpawnTime));
 
-            if (TrafficSystem.Instance.spawnedVehicles.Count < TrafficSystem.Instance.spawnLimit)
+            if (canSpawn)
             {
-                GameObject newVehicle =
-                    spawnCollection.prefabs[Random.Range(0, spawnCollection.prefabs.Length)];
-                SpawnVehicle(newVehicle);
+                if (TrafficManager.Instance.spawnedVehicles.Count < TrafficManager.Instance.spawnLimit)
+                {
+                    GameObject newVehicle =
+                        spawnCollection.prefabs[Random.Range(0, spawnCollection.prefabs.Length)];
+                    SpawnVehicle(newVehicle);
+                }
             }
 
             if (spawnContinuously)
@@ -85,19 +87,15 @@ namespace _3Dimensions.TrafficSystem
 
         public void SpawnVehicle(GameObject prefab)
         {
-            RaycastHit hit;
-            Physics.Raycast(laneToSpawnIn.waypoints[0].transform.position, Vector3.down, out hit, 500);
+            Physics.Raycast(laneToSpawnIn.waypoints[0].transform.position, Vector3.down, out RaycastHit hit, 500);
 
             Vector3 startPosition = hit.point;
             Quaternion startRotation = Quaternion.LookRotation(laneToSpawnIn.waypoints[1].transform.position - laneToSpawnIn.waypoints[0].transform.position);
             
             GameObject spawnedVehicle = Instantiate(prefab, startPosition, startRotation);
             
-            //Network
-            if (canSpawn)
-            {
-                Spawn?.Invoke();
-            }
+            //Invoke spawn action
+            OnInstantiateGameObject?.Invoke(spawnedVehicle);
             
             //Route setup
             TrafficRoute route = spawnedVehicle.GetComponent<TrafficRoute>();
@@ -109,7 +107,7 @@ namespace _3Dimensions.TrafficSystem
             vehicleAi.vehicleState = startState;
 
             laneToSpawnIn.trafficInLane.Add(vehicleAi);
-            TrafficSystem.Instance.spawnedVehicles.Add(spawnedVehicle);
+            TrafficManager.Instance.spawnedVehicles.Add(spawnedVehicle);
         }
     }
 }

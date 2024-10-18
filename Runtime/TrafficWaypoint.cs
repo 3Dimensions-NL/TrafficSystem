@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
     public class TrafficWaypoint : MonoBehaviour
     {
@@ -22,13 +21,13 @@ namespace _3Dimensions.TrafficSystem
         {
             if (!selected)
             {
-                Gizmos.color = Color.gray;
-                Gizmos.DrawSphere(transform.position, 0.03f);
+                Gizmos.color = Color.blue;
+                Gizmos.DrawSphere(transform.position, 0.03f * TrafficManager.Instance.gizmosScale);
             }
             else
             {
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawSphere(transform.position, 0.05f);
+                Gizmos.DrawSphere(transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.05f * TrafficManager.Instance.gizmosScale);
 
                 if (parentLane)
                 {
@@ -39,7 +38,12 @@ namespace _3Dimensions.TrafficSystem
                             if (parentLane.waypoints[i].transform != transform)
                             {
                                 Gizmos.color = Color.green;
-                                Gizmos.DrawSphere(parentLane.waypoints[i].transform.position, 0.05f);
+                                Gizmos.DrawSphere(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.05f);
+                                if (i < parentLane.waypoints.Count - 1)
+                                {
+                                    Gizmos.DrawLine(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0),
+                                        parentLane.waypoints[i + 1].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
+                                }
                             }
                         }
                     }
@@ -53,11 +57,11 @@ namespace _3Dimensions.TrafficSystem
                             {
                                 for (int i = 0; i < lane.waypoints.Count; i++)
                                 {
-                                    Gizmos.DrawSphere(lane.waypoints[i].transform.position, 0.03f);
+                                    Gizmos.DrawSphere(lane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.03f);
                                     if (i < lane.waypoints.Count - 1)
                                     {
-                                        Gizmos.DrawLine(lane.waypoints[i].transform.position,
-                                            lane.waypoints[i + 1].transform.position);
+                                        Gizmos.DrawLine(lane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0),
+                                            lane.waypoints[i + 1].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
                                     }
                                 }
                             }

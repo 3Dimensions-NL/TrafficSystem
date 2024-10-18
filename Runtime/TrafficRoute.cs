@@ -3,16 +3,16 @@ using UnityEngine;
 using UnityEngine.Splines;
 using Random = UnityEngine.Random;
 
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
     public class TrafficRoute : MonoBehaviour
     {
         public bool loop;
         public TrafficLane startLaneInspector;
-        public List<TrafficLane> lanes = new();
-        public List<TrafficWaypoint> waypoints = new();
+        public List<TrafficLane> lanes = new List<TrafficLane>();
+        public List<TrafficWaypoint> waypoints = new List<TrafficWaypoint>();
         public Spline spline;
-        public TrafficWaypoint LastWaypoint => waypoints[^1];
+        public TrafficWaypoint LastWaypoint { get { return waypoints[^1]; }}
 
         public float editorVisualisationDetail = 5;
         public float editorVisualisationSize = 0.1f;
@@ -58,7 +58,7 @@ namespace _3Dimensions.TrafficSystem
                 //Generate route from predefined lanes
                 for (int l = 0; l < lanes.Count; l++)
                 {
-                    for (int w = 1; w < lanes[l].waypoints.Count; w++)
+                    for (int w = 0; w < lanes[l].waypoints.Count; w++)
                     {
                         waypoints.Add(lanes[l].waypoints[w]);
                     }
@@ -111,13 +111,13 @@ namespace _3Dimensions.TrafficSystem
 
         public struct RoutePoint
         {
-            public Vector3 position;
-            public Vector3 direction;
+            public Vector3 Position;
+            public Vector3 Direction;
 
             public RoutePoint(Vector3 position, Vector3 direction)
             {
-                this.position = position;
-                this.direction = direction;
+                Position = position;
+                Direction = direction;
             }
         }
 

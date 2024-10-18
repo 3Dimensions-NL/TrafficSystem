@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Splines;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
     [ExecuteAlways]
     public class SplineTest : MonoBehaviour

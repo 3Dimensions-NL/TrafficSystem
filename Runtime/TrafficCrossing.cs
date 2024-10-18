@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
 #if UNITY_EDITOR
     [ExecuteInEditMode]
@@ -11,7 +10,7 @@ namespace _3Dimensions.TrafficSystem
     {
         public float searchRadius = 15;
         public float waitTime = 6;
-        private float timer = 0;
+        private float _timer = 0;
         public List<TrafficLane> lanes = new List<TrafficLane>();
 
         [HideInInspector] public Vector3 lastPosition;
@@ -29,9 +28,9 @@ namespace _3Dimensions.TrafficSystem
         {
             if (AllLanesBlocked())
             {
-                timer += Time.deltaTime;
+                _timer += Time.deltaTime;
 
-                if (timer > waitTime)
+                if (_timer > waitTime)
                 {
                     TrafficLane laneToUnblock = LanesWithLeastVehicles();
                     if (laneToUnblock != null)
@@ -43,9 +42,9 @@ namespace _3Dimensions.TrafficSystem
                         }
                     }
 
-                    if (timer > waitTime + 0.1f )
+                    if (_timer > waitTime + 0.1f )
                     {
-                        timer = 0;
+                        _timer = 0;
                     }
                 }
             }

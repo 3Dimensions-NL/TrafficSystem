@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
     [RequireComponent(typeof(BoxCollider))]
     public class TrafficTrigger : MonoBehaviour

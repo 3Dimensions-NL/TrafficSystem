@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
     public class VehicleLaneProgressTracker : MonoBehaviour
     {
@@ -93,13 +92,13 @@ namespace _3Dimensions.TrafficSystem
                                    Time.deltaTime);
             }
 
-            target.position = trafficLane.GetRoutePoint(progressDistance + lookAheadForTargetOffset + lookAheadForTargetFactor * speed).position;
-            target.rotation = Quaternion.LookRotation(trafficLane.GetRoutePoint(progressDistance + lookAheadForSpeedOffset + lookAheadForSpeedFactor * speed).direction);
+            target.position = trafficLane.GetRoutePoint(progressDistance + lookAheadForTargetOffset + lookAheadForTargetFactor * speed).Position;
+            target.rotation = Quaternion.LookRotation(trafficLane.GetRoutePoint(progressDistance + lookAheadForSpeedOffset + lookAheadForSpeedFactor * speed).Direction);
 
             // get our current progress along the route
             progressPoint = trafficLane.GetRoutePoint(progressDistance);
-            Vector3 progressDelta = progressPoint.position - transform.position;
-            if (Vector3.Dot(progressDelta, progressPoint.direction) < 0)
+            Vector3 progressDelta = progressPoint.Position - transform.position;
+            if (Vector3.Dot(progressDelta, progressPoint.Direction) < 0)
             {
                 progressDistance += progressDelta.magnitude * 0.5f;
             }

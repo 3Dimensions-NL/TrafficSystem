@@ -1,21 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
-#if UNITY_EDITOR
     [ExecuteAlways]
-    [UnityEditor.CanEditMultipleObjects]
-#endif
     public class TrafficLane : MonoBehaviour
     {
         [Header("Lane details")]
         public float speed = 15;
         public List<TrafficWaypoint> waypoints = new List<TrafficWaypoint>();
         public float autoConnectEndpointDistance = .2f;
-        public TrafficWaypoint StartPoint => waypoints[0];
-        public TrafficWaypoint EndPoint => waypoints[^1];
+        public TrafficWaypoint StartPoint { get { return waypoints[0]; } }
+        public TrafficWaypoint EndPoint { get { return waypoints[^1]; } }
         public SplineContainer splineContainer;
         private SplineContainer _splineContainer;
         private Spline _spline;
@@ -26,10 +22,10 @@ namespace _3Dimensions.TrafficSystem
         public List<TrafficLane> endOfLaneConnections = new List<TrafficLane>();
 
         [Header("Traffic Rules")]
-        public bool blocked = false; //Needed for crossings etc.
+        public bool blocked; //Needed for crossings etc.
         public float blockCooldownTime = 1;
-        private float blockCoolDownTimer = 0;
-        public List<TrafficBlocker> blockersToIgnore = new();
+        private float _blockCoolDownTimer;
+        public List<TrafficBlocker> blockersToIgnore = new List<TrafficBlocker>();
 
         public List<TrafficLane> blockedByLanes = new List<TrafficLane>();
         public List<VehicleAi> trafficInLane = new List<VehicleAi>();
@@ -91,7 +87,7 @@ namespace _3Dimensions.TrafficSystem
 
             if (blockedByLanes.Count > 0)
             {
-                //Only block automaticly if there are other lanes to give way to
+                //Only block automatically if there are other lanes to give way to
                 int trafficCount = 0;
                 foreach (TrafficLane lane in blockedByLanes)
                 {
@@ -101,11 +97,11 @@ namespace _3Dimensions.TrafficSystem
                 if (trafficCount > 0)
                 {
                     blocked = true;
-                    blockCoolDownTimer = 0;
+                    _blockCoolDownTimer = 0;
                 }
-                else if (blockCoolDownTimer < blockCooldownTime)
+                else if (_blockCoolDownTimer < blockCooldownTime)
                 {
-                    blockCoolDownTimer += Time.deltaTime;
+                    _blockCoolDownTimer += Time.deltaTime;
                 }
                 else
                 {
@@ -171,13 +167,13 @@ namespace _3Dimensions.TrafficSystem
 
         public struct RoutePoint
         {
-            public Vector3 position;
-            public Vector3 direction;
+            public Vector3 Position;
+            public Vector3 Direction;
 
             public RoutePoint(Vector3 position, Vector3 direction)
             {
-                this.position = position;
-                this.direction = direction;
+                Position = position;
+                Direction = direction;
             }
         }
 
@@ -216,10 +212,18 @@ namespace _3Dimensions.TrafficSystem
             }
         }
 
+        public void AddSpawnerAtStart()
+        {
+            int spawnerCount = FindObjectsOfType<TrafficSpawner>().Length;
+            spawnerCount++;
+            GameObject newSpawner = new GameObject("Spawner (" + spawnerCount + ")");
+            TrafficSpawner trafficSpawner = newSpawner.AddComponent<TrafficSpawner>();
+            trafficSpawner.laneToSpawnIn = this;
+            trafficSpawner.canSpawn = true;
+        }
+
         private void OnDrawGizmos()
         {
-            DrawGizmos(false);
-
             if (endOfLaneConnections.Count > 0)
             {
                 for (int i = 0; i < endOfLaneConnections.Count; i++)
@@ -235,8 +239,6 @@ namespace _3Dimensions.TrafficSystem
 
         private void OnDrawGizmosSelected()
         {
-            DrawGizmos(true);
-
             if (blockedByLanes.Count > 0)
             {
                 Gizmos.color = Color.red;
@@ -246,33 +248,14 @@ namespace _3Dimensions.TrafficSystem
                     {
                         for (int i = 0; i < lane.waypoints.Count; i++)
                         {
-                            Gizmos.DrawSphere(lane.waypoints[i].transform.position, 0.1f);
+                            Gizmos.DrawSphere(
+                                lane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 
+                                0.1f * TrafficManager.Instance.gizmosScale);
                         }
                     }
                 }
             }
         }
-
-        private void DrawGizmos(bool selected)
-        {
-            // if (waypoints.Count > 1)
-            // {
-            //     CachePositionsAndDistances();
-            //     Length = CalculatedLength();
-            //     // draw path
-            //     Gizmos.color = Color.yellow;
-            //     Vector3 prev = points[0];
-            //
-            //     float step = Length / editorVisualisationSubsteps;
-            //     for (float dist = 0; dist < Length; dist += step)
-            //     {
-            //         Vector3 next = GetRoutePosition(dist + step);
-            //         Gizmos.DrawLine(prev, next);
-            //         prev = next;
-            //     }
-            // }
-        }
-
 #endif
     }
 
@@ -306,6 +289,11 @@ namespace _3Dimensions.TrafficSystem
             if (GUILayout.Button("Calculate Spline"))
             {
                 myTarget.GenerateSpline();
+            }
+            
+            if (GUILayout.Button("Add spawner at start"))
+            {
+                myTarget.AddSpawnerAtStart();
             }
         }
     }

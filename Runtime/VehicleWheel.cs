@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
     public class VehicleWheel : MonoBehaviour
     {
@@ -34,7 +33,7 @@ namespace _3Dimensions.TrafficSystem
             if (steering)
             {
                 float angle = Mathf.Clamp(_vehicleAi.SteeringAngle * steeringFactor, -steeringMaxAngle, steeringMaxAngle);
-                if (_vehicleAi.steerToLeft)
+                if (_vehicleAi.SteerToLeft)
                 {
                     angle = -angle;
                 }

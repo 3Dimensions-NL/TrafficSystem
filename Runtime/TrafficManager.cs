@@ -1,26 +1,27 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-namespace _3Dimensions.TrafficSystem
+namespace _3Dimensions.TrafficSystem.Runtime
 {
-    public class TrafficSystem : MonoBehaviour
+    public class TrafficManager : MonoBehaviour
     {
-        private static TrafficSystem _instance;
-        public static TrafficSystem Instance
+        private static TrafficManager _instance;
+        public static TrafficManager Instance
         {
             get
             {
-                if (!_instance) _instance = FindObjectOfType<TrafficSystem>(true);
+                if (!_instance) _instance = FindObjectOfType<TrafficManager>(true);
                 return _instance;
             }
         }
         
         
         public int spawnLimit = 20;
-        public List<GameObject> spawnedVehicles = new();
+        public List<GameObject> spawnedVehicles = new List<GameObject>();
 
-        [Header("Auto Connections")] public float autoLaneConnectDistance = 0.2f;
+        [Header("Auto Connections")] public float autoLaneConnectDistance = 1.5f;
 
+        public float gizmosScale = 2;
+        public float gizmosHeight = 1;
 
         private void OnDisable()
         {
@@ -49,7 +50,7 @@ namespace _3Dimensions.TrafficSystem
             {
                 UnityEditor.EditorUtility.DisplayProgressBar("Connecting Lanes",
                     "Connecting lane " + i + " from " + trafficLanes.Length, (float)i / (float)trafficLanes.Length);
-
+                trafficLanes[i].autoConnectEndpointDistance = autoLaneConnectDistance;
                 trafficLanes[i].ConnectToNearestStartPoint();
             }
             
@@ -74,13 +75,13 @@ namespace _3Dimensions.TrafficSystem
     }
     
 #if UNITY_EDITOR
-    [UnityEditor.CustomEditor(typeof(TrafficSystem))]
+    [UnityEditor.CustomEditor(typeof(TrafficManager))]
     [UnityEditor.CanEditMultipleObjects]
     public class TrafficSystemEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            TrafficSystem myTarget = (TrafficSystem)target;
+            TrafficManager myTarget = (TrafficManager)target;
 
             DrawDefaultInspector();
 
