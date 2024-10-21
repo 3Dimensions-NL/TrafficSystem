@@ -38,7 +38,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
                             if (parentLane.waypoints[i].transform != transform)
                             {
                                 Gizmos.color = Color.green;
-                                Gizmos.DrawSphere(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.05f);
+                                Gizmos.DrawSphere(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.05f * TrafficManager.Instance.gizmosScale);
                                 if (i < parentLane.waypoints.Count - 1)
                                 {
                                     Gizmos.DrawLine(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0),
@@ -57,7 +57,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
                             {
                                 for (int i = 0; i < lane.waypoints.Count; i++)
                                 {
-                                    Gizmos.DrawSphere(lane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.03f);
+                                    Gizmos.DrawSphere(lane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.03f * TrafficManager.Instance.gizmosScale);
                                     if (i < lane.waypoints.Count - 1)
                                     {
                                         Gizmos.DrawLine(lane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0),
@@ -76,11 +76,11 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
 #if UNITY_EDITOR
     [UnityEditor.CustomEditor(typeof(TrafficWaypoint))]
-    public class TrafficWaypointrClass : UnityEditor.Editor
+    public class TrafficWaypointEditor : UnityEditor.Editor
     {
-        bool leftControl = false;
-        bool rightControl = false;
-        bool mouseLeft = false;
+        bool _leftControl;
+        bool _rightControl;
+        bool _mouseLeft;
 
 
         public override void OnInspectorGUI()
@@ -119,41 +119,41 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 case EventType.KeyDown:
                     if (Event.current.keyCode == (KeyCode.LeftControl))
                     {
-                        leftControl = true;
+                        _leftControl = true;
                     }
                     if (Event.current.keyCode == (KeyCode.RightControl))
                     {
-                        rightControl = true;
+                        _rightControl = true;
                     }
 
                     break;
                 case EventType.KeyUp:
                     if (Event.current.keyCode == (KeyCode.LeftControl))
                     {
-                        leftControl = false;
+                        _leftControl = false;
                     }
                     if (Event.current.keyCode == (KeyCode.RightControl))
                     {
-                        rightControl = false;
+                        _rightControl = false;
                     }
                     break;
                 case EventType.MouseDown:
                     if (Event.current.button == 0)
                     {
-                        mouseLeft = true;
+                        _mouseLeft = true;
                     }
                     break;
                 case EventType.MouseUp:
                     if (Event.current.button == 0)
                     {
-                        mouseLeft = false;
+                        _mouseLeft = false;
                     }
                     break;
             }
 
             if (myTarget.parentLane)
             {
-                if (leftControl && mouseLeft)
+                if (_leftControl && _mouseLeft)
                 {
                     List<TrafficWaypoint> selectedWaypoints = new List<TrafficWaypoint>();
 
@@ -190,7 +190,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
                     }
                 }
 
-                if (rightControl && mouseLeft)
+                if (_rightControl && _mouseLeft)
                 {
                     List<TrafficWaypoint> selectedWaypoints = new List<TrafficWaypoint>();
 

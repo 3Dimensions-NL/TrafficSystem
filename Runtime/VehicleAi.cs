@@ -42,6 +42,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public float collisionDiameter = 1f;
         public float stoppingDistance = 2;
         public Transform objectDetector;
+        public float trafficSurfaceDetectionHeight = 1;
         
         private Quaternion _lastRotation;
         private Vector3 _lastPosition;
@@ -296,8 +297,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
         
         private void AlignWithGround()
         {
-            Vector3 rayStartPoint = transform.position + (Vector3.up * 5f);
-            RaycastHit[] hits = Physics.RaycastAll(rayStartPoint, Vector3.down, 10f);
+            Vector3 rayStartPoint = transform.position + (Vector3.up * trafficSurfaceDetectionHeight);
+            RaycastHit[] hits = Physics.RaycastAll(rayStartPoint, Vector3.down, trafficSurfaceDetectionHeight * 2);
 
             if (hits.Length == 0)
             {
@@ -351,10 +352,17 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private void OnDrawGizmos()
         {
+            //Detector Gizmo
             Gizmos.color = Color.red;
             Vector3 point = DetectionPoint();
             Gizmos.DrawLine(objectDetector.position, point);
             Gizmos.DrawSphere(point, collisionDiameter);
+            
+            //Surface Gizmo
+            Gizmos.color = Color.blue;
+            Vector3 surfaceStart = transform.position + (Vector3.up * trafficSurfaceDetectionHeight);
+            Vector3 surfaceEnd = surfaceStart - new Vector3(0, 2 * trafficSurfaceDetectionHeight, 0);
+            Gizmos.DrawLine(surfaceStart, surfaceEnd);
         }
     }
 }
