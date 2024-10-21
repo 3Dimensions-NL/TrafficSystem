@@ -35,15 +35,16 @@ namespace _3Dimensions.TrafficSystem.Runtime
                     {
                         for (int i = 0; i < parentLane.waypoints.Count; i++)
                         {
+                            if (i < parentLane.waypoints.Count - 1)
+                            {
+                                Gizmos.DrawLine(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0),
+                                    parentLane.waypoints[i + 1].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
+                            }
+                            
                             if (parentLane.waypoints[i].transform != transform)
                             {
                                 Gizmos.color = Color.green;
                                 Gizmos.DrawSphere(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0), 0.05f * TrafficManager.Instance.gizmosScale);
-                                if (i < parentLane.waypoints.Count - 1)
-                                {
-                                    Gizmos.DrawLine(parentLane.waypoints[i].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0),
-                                        parentLane.waypoints[i + 1].transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
-                                }
                             }
                         }
                     }
