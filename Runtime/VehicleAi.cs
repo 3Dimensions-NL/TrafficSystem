@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Globalization;
+using UnityEngine;
 namespace _3Dimensions.TrafficSystem.Runtime
 {
 
@@ -54,7 +55,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
         private float _delta;
 
         public bool simulate = true; //TODO true when server, false when not server
-        public bool debugStateAsName;
         
         private void Awake()
         {
@@ -82,11 +82,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         void LateUpdate()
         {
-            if (debugStateAsName)
-            {
-                name = ActiveVehicleState().ToString();
-            }
-            
             if (!simulate) return;
             ApplyUpdate(Time.deltaTime);
         }
@@ -363,6 +358,34 @@ namespace _3Dimensions.TrafficSystem.Runtime
             Vector3 surfaceStart = transform.position + (Vector3.up * trafficSurfaceDetectionHeight);
             Vector3 surfaceEnd = surfaceStart - new Vector3(0, 2 * trafficSurfaceDetectionHeight, 0);
             Gizmos.DrawLine(surfaceStart, surfaceEnd);
+            
+#if UNITY_EDITOR
+            DrawString(vehicleState + "(" + currentSpeed.ToString("n2", CultureInfo.InvariantCulture) + ")", transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
+#endif
         }
+        
+#if UNITY_EDITOR
+        private void DrawString(string text, Vector3 worldPos, Color? colour = null) {
+            UnityEditor.Handles.BeginGUI();
+
+            var restoreColor = GUI.color;
+
+            if (colour.HasValue) GUI.color = colour.Value;
+            var view = UnityEditor.SceneView.currentDrawingSceneView;
+            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
+
+            if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
+            {
+                GUI.color = restoreColor;
+                UnityEditor.Handles.EndGUI();
+                return;
+            }
+            
+            Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
+            GUI.Label(new Rect(screenPos.x - (size.x / 2), Screen.height - screenPos.y - (size.y * 4), size.x, size.y), text);
+            GUI.color = restoreColor;
+            UnityEditor.Handles.EndGUI();
+        }
+#endif
     }
 }
