@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 namespace _3Dimensions.TrafficSystem.Runtime
@@ -15,6 +16,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public float minSpawnTime = 5;
         public float maxSpawnTime = 15;
         public VehicleAi.VehicleState startState = VehicleAi.VehicleState.Driving;
+        
+        public UnityEvent onSpawn; 
 
         public bool canSpawn = true; //TODO true when server
 
@@ -108,6 +111,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
             laneToSpawnIn.trafficInLane.Add(vehicleAi);
             TrafficManager.Instance.spawnedVehicles.Add(spawnedVehicle);
+            
+            onSpawn?.Invoke();
         }
     }
 }
