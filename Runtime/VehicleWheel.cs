@@ -74,5 +74,31 @@ namespace _3Dimensions.TrafficSystem.Runtime
                     break;
             }
         }
+
+        public void Recenter()
+        {
+            if (wheelMeshParentTransform == null) return;
+            
+            transform.position = wheelMeshParentTransform.position;
+        }
     }
+    
+#if UNITY_EDITOR
+    [UnityEditor.CustomEditor(typeof(VehicleWheel))]
+    [UnityEditor.CanEditMultipleObjects]
+    public class VehicleWheelEditor : UnityEditor.Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            VehicleWheel myTarget = (VehicleWheel)target;
+
+            DrawDefaultInspector();
+
+            if (GUILayout.Button("Recenter on WheelMesh Parent"))
+            {
+                myTarget.Recenter();
+            }
+        }
+    }
+#endif
 }
