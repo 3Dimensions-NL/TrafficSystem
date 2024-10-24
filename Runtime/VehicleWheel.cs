@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 namespace _3Dimensions.TrafficSystem.Runtime
 {
     public class VehicleWheel : MonoBehaviour
@@ -7,7 +8,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public Transform wheelMeshRotatableTransform;
         public SnapAxis steeringAxis = SnapAxis.Y;
         public SnapAxis rotationAxis = SnapAxis.X;
-        public float rotateFactor = 1;
+        public float wheelRadius = 0.5f;
 
         public bool steering;
         public float steeringFactor = 0.8f;
@@ -57,22 +58,25 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 _oldSteering = transform.localRotation;
             }
 
-            
-            float rotateSpeed = -(Vector3.Distance(transform.position, _oldPos) * rotateFactor);
-            _oldPos = transform.position;
+            Vector3 displacement = transform.position - _oldPos;
+            float speed = displacement.magnitude / Time.deltaTime;
+            float angularVelocity = speed / wheelRadius;
+            float angularVelocityDegrees = angularVelocity * Mathf.Rad2Deg * Time.deltaTime;
             
             switch (rotationAxis)
             {
                 case SnapAxis.X:
-                    wheelMeshRotatableTransform.Rotate(new Vector3(rotateSpeed, 0, 0), Space.Self);
+                    wheelMeshRotatableTransform.Rotate(new Vector3(-angularVelocityDegrees, 0, 0), Space.Self);
                     break;
                 case SnapAxis.Y:
-                    wheelMeshRotatableTransform.Rotate(new Vector3(0, rotateSpeed, 0), Space.Self);
+                    wheelMeshRotatableTransform.Rotate(new Vector3(0, -angularVelocityDegrees, 0), Space.Self);
                     break;
                 case SnapAxis.Z:
-                    wheelMeshRotatableTransform.Rotate(new Vector3(0, 0, rotateSpeed), Space.Self);
+                    wheelMeshRotatableTransform.Rotate(new Vector3(0, 0, -angularVelocityDegrees), Space.Self);
                     break;
             }
+            
+            _oldPos = transform.position;
         }
 
         public void Recenter()
@@ -81,6 +85,14 @@ namespace _3Dimensions.TrafficSystem.Runtime
             
             transform.position = wheelMeshParentTransform.position;
         }
+        
+        #if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, wheelRadius);
+        }
+        #endif
     }
     
 #if UNITY_EDITOR

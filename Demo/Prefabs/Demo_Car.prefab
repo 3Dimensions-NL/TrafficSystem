@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9fc9185e43f6ccc40a6018b115ae88e4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 1180779187936487653}
   steeringAxis: 2
   rotationAxis: 2
-  rotateFactor: 1
+  wheelRadius: 0.5
   steering: 0
   steeringFactor: 0.8
   steeringMaxAngle: 45
@@ -228,7 +228,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9fc9185e43f6ccc40a6018b115ae88e4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -565,7 +565,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 3123933842896159983}
   steeringAxis: 2
   rotationAxis: 2
-  rotateFactor: 1
+  wheelRadius: 0.5
   steering: 1
   steeringFactor: 0.8
   steeringMaxAngle: 45
@@ -662,7 +662,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9fc9185e43f6ccc40a6018b115ae88e4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -732,7 +732,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 5660641266295778217}
   steeringAxis: 2
   rotationAxis: 2
-  rotateFactor: 1
+  wheelRadius: 0.5
   steering: 0
   steeringFactor: 0.8
   steeringMaxAngle: 45
@@ -793,7 +793,7 @@ Transform:
   m_GameObject: {fileID: 7739962855984239217}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.429, y: 0.5, z: 4}
+  m_LocalPosition: {x: 1, y: 0.5, z: 4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -815,7 +815,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 5251575049410615797}
   steeringAxis: 2
   rotationAxis: 2
-  rotateFactor: 1
+  wheelRadius: 0.5
   steering: 1
   steeringFactor: 0.8
   steeringMaxAngle: 45
@@ -912,7 +912,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9fc9185e43f6ccc40a6018b115ae88e4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -989,7 +989,7 @@ MonoBehaviour:
   alignWithGround: 1
   currentSpeed: 0
   accelerationSpeed: 5
-  brakeSpeed: 10
+  brakeSpeed: 20
   steeringSpeed: 0.5
   collisionDetectionSpeedFactor: 1
   collisionDetectionMin: 2
