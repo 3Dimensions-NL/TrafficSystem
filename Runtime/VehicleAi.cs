@@ -336,8 +336,13 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private float DetectionDistance()
         {
-            return Mathf.Clamp(currentSpeed * collisionDetectionSpeedFactor, collisionDetectionMin,
-                collisionDetectionMax);
+            if (Application.isPlaying)
+            {
+                return Mathf.Clamp(currentSpeed * collisionDetectionSpeedFactor, collisionDetectionMin,
+                    collisionDetectionMax);
+            }
+
+            return collisionDetectionMax;
         }
         
         private Vector3 DetectionPoint()
