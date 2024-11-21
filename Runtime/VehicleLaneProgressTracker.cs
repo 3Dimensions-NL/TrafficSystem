@@ -102,9 +102,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             {
                 progressDistance += progressDelta.magnitude * 0.5f;
             }
-
-            //Debug.Log("Lane Length = " + trafficLane.Length + " Progress = " + progressDistance);
-
+            
             lastPosition = transform.position;
         }
         private void OnDrawGizmos()

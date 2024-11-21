@@ -73,7 +73,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
                 if (differentCount > 0)
                 {
-                    Debug.Log("updating waypoints...");
                     waypoints = testList;
 
                     for (int i = 0; i < waypoints.Count; i++)
