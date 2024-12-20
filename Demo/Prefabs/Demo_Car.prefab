@@ -1245,7 +1245,7 @@ MonoBehaviour:
   collisionDetectionSpeedFactor: 1
   collisionDetectionMin: 2.5
   collisionDetectionMax: 30
-  collisionDiameter: 0.25
+  collisionDiameter: 0.5
   stoppingDistance: 2
   detectionHeight: 1
   trafficSurfaceDetectionHeight: 1

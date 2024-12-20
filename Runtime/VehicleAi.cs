@@ -379,11 +379,11 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private Vector3 DetectionStart()
         {
-            if (_route == null) return transform.position + (transform.forward * collisionDetectionMin);
-            
-            Vector3 target = DistanceLeft < collisionDetectionMin
-                ? _route.GetRoutePosition(_route.Length)
-                : _route.GetRoutePosition(_traveledDistance + collisionDetectionMin);
+            Vector3 target = _route
+                ? DistanceLeft < collisionDetectionMin
+                    ? _route.GetRoutePosition(_route.Length)
+                    : _route.GetRoutePosition(_traveledDistance + collisionDetectionMin)
+                : transform.position + (transform.forward * collisionDetectionMin);
             
             target.y = transform.position.y + detectionHeight;
             return target;
@@ -393,11 +393,11 @@ namespace _3Dimensions.TrafficSystem.Runtime
         {
             float detectionDistance = DetectionDistance();
             Vector3 start = DetectionStart();
-            if (_route == null) return start + (transform.forward * detectionDistance);
             
-            Vector3 target = DistanceLeft < detectionDistance
+            Vector3 target = _route ? DistanceLeft < detectionDistance
                 ? _route.GetRoutePosition(_route.Length)
-                : _route.GetRoutePosition(_traveledDistance + detectionDistance);
+                : _route.GetRoutePosition(_traveledDistance + detectionDistance) :
+                start + (transform.forward * detectionDistance);
             
             target.y = transform.position.y + detectionHeight;
             return target;
@@ -411,6 +411,12 @@ namespace _3Dimensions.TrafficSystem.Runtime
             Vector3 target = DetectionTarget();
             Gizmos.DrawLine(start, target);
             Gizmos.DrawSphere(target, collisionDiameter);
+            
+            //Stopping distance gizmo
+            Gizmos.color = Color.yellow;
+            Vector3 stopDirection = (target - start).normalized;
+            Vector3 stopPosition = start + (stopDirection * stoppingDistance);
+            Gizmos.DrawSphere(stopPosition, collisionDiameter);
             
             //Surface Gizmo
             Gizmos.color = Color.blue;
