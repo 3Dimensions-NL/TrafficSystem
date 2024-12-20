@@ -49,7 +49,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public float collisionDiameter = 1f;
         public float stoppingDistance = 2;
         public float detectionHeight = 1;
-        // public Transform objectDetector;
         public float trafficSurfaceDetectionHeight = 1;
         
         private Quaternion _lastRotation;
@@ -249,9 +248,9 @@ namespace _3Dimensions.TrafficSystem.Runtime
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, steeringSpeed * currentSpeed * _deltaTime);
 
             // Steer rotation
-            Vector3 steerTarget = DistanceLeft < stoppingDistance
+            Vector3 steerTarget = DistanceLeft < stoppingDistance + collisionDetectionMin
                 ? _route.GetRoutePosition(_route.Length)
-                : _route.GetRoutePosition(_traveledDistance + stoppingDistance);
+                : _route.GetRoutePosition(_traveledDistance + stoppingDistance + collisionDetectionMin);
             Vector3 steerDirection = steerTarget - transform.position;
             Quaternion steerRotation = Quaternion.LookRotation(steerDirection);
 
