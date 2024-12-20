@@ -1243,11 +1243,11 @@ MonoBehaviour:
   brakeSpeed: 20
   steeringSpeed: 20
   collisionDetectionSpeedFactor: 1
-  collisionDetectionMin: 4
+  collisionDetectionMin: 2.5
   collisionDetectionMax: 30
   collisionDiameter: 0.25
-  stoppingDistance: 5
-  objectDetector: {fileID: 5595502072774474068}
+  stoppingDistance: 2
+  detectionHeight: 1
   trafficSurfaceDetectionHeight: 1
   simulate: 1
   debug: 0

@@ -48,7 +48,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public float collisionDetectionMax = 30;
         public float collisionDiameter = 1f;
         public float stoppingDistance = 2;
-        public Transform objectDetector;
+        public float detectionHeight = 1;
+        // public Transform objectDetector;
         public float trafficSurfaceDetectionHeight = 1;
         
         private Quaternion _lastRotation;
@@ -202,7 +203,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
         {
             if (!hasObstacleInFront)
             {
-                Vector3 objectDetectorPos = objectDetector.transform.position;
+                Vector3 objectDetectorPos = DetectionStart();
                 objectDetectorPos.y = 0;
                 Vector3 endOfLanePos = CurrentLane.EndPoint.transform.position;
                 endOfLanePos.y = 0;
@@ -289,11 +290,12 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private bool ObstacleInFront()
         {
-            Vector3 detectionPoint = DetectionPoint();
-            Vector3 direction = (detectionPoint - objectDetector.position).normalized;
-            float distance = Vector3.Distance(detectionPoint, objectDetector.position);
+            Vector3 detectionStart = DetectionStart();
+            Vector3 detectionTarget = DetectionTarget();
+            Vector3 direction = (detectionTarget - detectionStart).normalized;
+            float distance = Vector3.Distance(detectionTarget, detectionStart);
 
-            if (Physics.SphereCast(objectDetector.position, collisionDiameter, direction, out RaycastHit hit, distance))
+            if (Physics.SphereCast(detectionStart, collisionDiameter, direction, out RaycastHit hit, distance))
             {
                 VehicleAi otherVehicle = hit.collider.GetComponent<VehicleAi>();
                 if (otherVehicle == this) otherVehicle = null;
@@ -368,23 +370,36 @@ namespace _3Dimensions.TrafficSystem.Runtime
         {
             if (Application.isPlaying)
             {
-                return Mathf.Clamp(currentSpeed * collisionDetectionSpeedFactor, collisionDetectionMin,
+                return Mathf.Clamp(currentSpeed * collisionDetectionSpeedFactor, stoppingDistance + collisionDetectionMin,
                     collisionDetectionMax);
             }
 
             return collisionDetectionMax;
         }
-        
-        private Vector3 DetectionPoint()
+
+        private Vector3 DetectionStart()
         {
-            float detectionDistance = DetectionDistance(); 
-            if (_route == null) return objectDetector.position + (objectDetector.forward * detectionDistance);
+            if (_route == null) return transform.position + (transform.forward * collisionDetectionMin);
+            
+            Vector3 target = DistanceLeft < collisionDetectionMin
+                ? _route.GetRoutePosition(_route.Length)
+                : _route.GetRoutePosition(_traveledDistance + collisionDetectionMin);
+            
+            target.y = transform.position.y + detectionHeight;
+            return target;
+        }
+        
+        private Vector3 DetectionTarget()
+        {
+            float detectionDistance = DetectionDistance();
+            Vector3 start = DetectionStart();
+            if (_route == null) return start + (transform.forward * detectionDistance);
             
             Vector3 target = DistanceLeft < detectionDistance
                 ? _route.GetRoutePosition(_route.Length)
                 : _route.GetRoutePosition(_traveledDistance + detectionDistance);
             
-            target.y = objectDetector.position.y;
+            target.y = transform.position.y + detectionHeight;
             return target;
         }
 
@@ -392,10 +407,10 @@ namespace _3Dimensions.TrafficSystem.Runtime
         {
             //Detector Gizmo
             Gizmos.color = hasObstacleInFront ? Color.red : Color.green;
-            Vector3 point = DetectionPoint();
-            Vector3 offset = point - objectDetector.position;
-            Gizmos.DrawLine(objectDetector.position, objectDetector.position + offset);
-            Gizmos.DrawSphere(point, collisionDiameter);
+            Vector3 start = DetectionStart();
+            Vector3 target = DetectionTarget();
+            Gizmos.DrawLine(start, target);
+            Gizmos.DrawSphere(target, collisionDiameter);
             
             //Surface Gizmo
             Gizmos.color = Color.blue;
