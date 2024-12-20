@@ -1,7 +1,7 @@
 {
     "name": "com.3dimensions.traffic",
     "displayName": "3Dimensions Traffic System",
-    "version": "0.1.1",
+    "version": "0.1.3",
     "unity": "2022.3",
     "description": "This package contains a simple traffic system and uses lanes with waypoints to generate splines",
     "keywords": ["Component, Editor, Tools, Traffic"],

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -10,19 +12,25 @@ namespace _3Dimensions.TrafficSystem.Runtime
     {
         public TrafficSpawnCollection spawnCollection;
         public TrafficLane laneToSpawnIn;
+        public string spawnTag = "Traffic";
 
         public bool spawnAtStart = true;
         public bool spawnContinuously = true;
         public float minSpawnTime = 5;
         public float maxSpawnTime = 15;
+        public float terrainDetectionHeight = 50;
         public VehicleAi.VehicleState startState = VehicleAi.VehicleState.Driving;
         
         public UnityEvent onSpawn; 
 
         public bool canSpawn = true; //TODO true when server
 
-        public Action<GameObject> OnInstantiateGameObject; 
+        public Action<GameObject> OnInstantiateGameObject;
 
+        private static int vehicleCounter = 0;
+        private List<GameObject> _vehiclesInTrigger = new List<GameObject>();
+
+        public bool debug;
         private void OnEnable()
         {
             if (Application.isPlaying)
@@ -40,6 +48,27 @@ namespace _3Dimensions.TrafficSystem.Runtime
         private void OnDisable()
         {
             StopAllCoroutines();
+        }
+
+        private void Update()
+        {
+            _vehiclesInTrigger = _vehiclesInTrigger.Where(item => item).ToList();
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag(spawnTag))
+            {
+                _vehiclesInTrigger.Add(other.gameObject);
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag(spawnTag))
+            {
+                if (_vehiclesInTrigger.Contains(other.gameObject)) _vehiclesInTrigger.Remove(other.gameObject);
+            }
         }
 
         private void OnDrawGizmos()
@@ -90,12 +119,29 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         public void SpawnVehicle(GameObject prefab)
         {
-            Physics.Raycast(laneToSpawnIn.waypoints[0].transform.position, Vector3.down, out RaycastHit hit, 500);
+            if (_vehiclesInTrigger.Count > 0)
+            {
+                Debug.LogWarning("Could not spawn vehicle, other vehicle in trigger.", this);
+                return;
+            }
+            
+            Physics.Raycast(laneToSpawnIn.waypoints[0].transform.position + (Vector3.up * (terrainDetectionHeight * 0.5f)), Vector3.down, out RaycastHit hit, terrainDetectionHeight);
 
+            if (hit.collider.GetComponent<TrafficSurface>() == null)
+            {
+                Debug.LogWarning("Could not spawn vehicle, no TrafficSurface found.", this);
+                return;
+            }
+            
+            vehicleCounter++;
             Vector3 startPosition = hit.point;
+            if (debug) Debug.Log("startPosition: " + startPosition, this);
             Quaternion startRotation = Quaternion.LookRotation(laneToSpawnIn.waypoints[1].transform.position - laneToSpawnIn.waypoints[0].transform.position);
             
             GameObject spawnedVehicle = Instantiate(prefab, startPosition, startRotation);
+            spawnedVehicle.tag = spawnTag;
+            spawnedVehicle.name = spawnedVehicle.name + "(" + vehicleCounter + ")";
+            if (debug) Debug.Log("Spawned position = " + spawnedVehicle.transform.position, spawnedVehicle);
             
             //Invoke spawn action
             OnInstantiateGameObject?.Invoke(spawnedVehicle);
@@ -107,7 +153,9 @@ namespace _3Dimensions.TrafficSystem.Runtime
             //AI Setup
             VehicleAi vehicleAi = spawnedVehicle.GetComponent<VehicleAi>();
             vehicleAi.currentSpeed = laneToSpawnIn.speed;
-            vehicleAi.vehicleState = startState;
+            vehicleAi.targetVehicleState = startState;
+
+            if (debug) Debug.Log("Spawned position after Ai setup = " + spawnedVehicle.transform.position, spawnedVehicle);
 
             laneToSpawnIn.trafficInLane.Add(vehicleAi);
             TrafficManager.Instance.spawnedVehicles.Add(spawnedVehicle);
