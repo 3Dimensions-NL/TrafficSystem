@@ -1,13 +1,17 @@
 ﻿using System.Globalization;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+
 namespace _3Dimensions.TrafficSystem.Runtime
 {
-
     [SelectionBase]
     public class VehicleAi : MonoBehaviour
     {
+        public SimulationMode SimulationMode { get; private set; } = SimulationMode.FixedUpdate;
         public int currentWaypoint = 0;
-
         public TrafficLane CurrentLane
         {
             get
@@ -30,15 +34,17 @@ namespace _3Dimensions.TrafficSystem.Runtime
             }
         }
         private TrafficLane _lastLane;
-        public VehicleState vehicleState;
+        public bool hasObstacleInFront;
+        public VehicleState targetVehicleState;
+        public VehicleState CurrentVehicleState { get; private set; }
         public bool alignWithGround = true;
         public float currentSpeed;
 
         public float accelerationSpeed = 5f;
         public float brakeSpeed = 10f;
-        public float steeringSpeed = .2f;
+        public float steeringSpeed = 1f;
         public float collisionDetectionSpeedFactor = 1;
-        public float collisionDetectionMin = 1;
+        public float collisionDetectionMin = 4;
         public float collisionDetectionMax = 30;
         public float collisionDiameter = 1f;
         public float stoppingDistance = 2;
@@ -48,17 +54,25 @@ namespace _3Dimensions.TrafficSystem.Runtime
         private Quaternion _lastRotation;
         private Vector3 _lastPosition;
         private float _traveledDistance;
+        private float DistanceLeft => _route ? _route.Length - _traveledDistance : 0;
+
         public float SteeringAngle { get; private set; }
         public bool SteerToLeft { get; private set; }
         
         private TrafficRoute _route;
-        private float _delta;
+        private float _deltaTime;
 
-        public bool simulate = true; //TODO true when server, false when not server
+        public bool simulate = true;
+        public bool debug = false;
+        
+        private Rigidbody _rigidbody;
         
         private void Awake()
         {
-            _route = gameObject.GetComponent<TrafficRoute>();
+            _route = GetComponent<TrafficRoute>();
+            _rigidbody = GetComponent<Rigidbody>();
+            
+            if (debug) Debug.Log("Position on Awake = " + transform.position);
         }
 
         // Start is called before the first frame update
@@ -67,6 +81,10 @@ namespace _3Dimensions.TrafficSystem.Runtime
             _lastRotation = transform.rotation;
             _lastPosition = transform.position;
             _traveledDistance = 0;
+            
+            SimulationMode = Physics.simulationMode;
+            
+            if (debug) Debug.Log("Position on Start = " + transform.position);
         }
 
         private void OnDestroy()
@@ -80,15 +98,27 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (_lastLane) _lastLane.trafficInLane.Remove(this);
         }
 
-        void LateUpdate()
+        void Update()
         {
             if (!simulate) return;
-            ApplyUpdate(Time.deltaTime);
+            if (SimulationMode == SimulationMode.Update)
+            {
+                ApplyUpdate(Time.deltaTime);
+            }
+        }
+        
+        void FixedUpdate()
+        {
+            if (!simulate) return;
+            if (SimulationMode == SimulationMode.FixedUpdate)
+            {
+                ApplyUpdate(Time.fixedDeltaTime);
+            }
         }
 
-        public void ApplyUpdate(float delta)
+        public void ApplyUpdate(float deltaTime)
         {
-            _delta = delta;
+            _deltaTime = deltaTime;
 
             if (_route)
             {
@@ -114,6 +144,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 }
 
                 //Handle movement and steering
+                hasObstacleInFront = ObstacleInFront();
                 Steer();
                 HandleCarState();
                 HandleMovement();
@@ -135,16 +166,17 @@ namespace _3Dimensions.TrafficSystem.Runtime
         }
         public VehicleState ActiveVehicleState()
         {
-            if (vehicleState == VehicleState.ForcedDrive) return VehicleState.ForcedDrive;
-            if (vehicleState == VehicleState.ChangingLanes) return VehicleState.ChangingLanes; //TODO workout lane changes
-            if (ObstacleInFront()) return VehicleState.ObstacleInFront;
+            if (targetVehicleState == VehicleState.ForcedDrive) return VehicleState.ForcedDrive;
+            if (hasObstacleInFront) return VehicleState.ObstacleInFront;
+            if (targetVehicleState == VehicleState.ChangingLanes) return VehicleState.ChangingLanes; //todo: workout lane changes
             if (CurrentLane.blocked) return VehicleState.Blocked;
-            return vehicleState;
+            return targetVehicleState;
         }
 
         private void HandleCarState()
         {
-            switch (ActiveVehicleState())
+            CurrentVehicleState = ActiveVehicleState();
+            switch (CurrentVehicleState)
             {
                 case VehicleState.Stopped:
                     Brake();
@@ -158,9 +190,9 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 case VehicleState.ObstacleInFront:
                     Brake();
                     break;
-                //TODO Changing lanes
+                //todo: Handle changing lanes
                 case VehicleState.ForcedDrive:
-                    vehicleState = VehicleState.Driving;
+                    targetVehicleState = VehicleState.Driving;
                     Drive();
                     break;
             }
@@ -168,7 +200,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private void HandleLaneBlocked()
         {
-            if (!ObstacleInFront())
+            if (!hasObstacleInFront)
             {
                 Vector3 objectDetectorPos = objectDetector.transform.position;
                 objectDetectorPos.y = 0;
@@ -194,39 +226,37 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
             if (currentSpeed < maxSpeed)
             {
-                currentSpeed += accelerationSpeed * _delta;
+                currentSpeed += accelerationSpeed * _deltaTime;
             }
             else if (currentSpeed > maxSpeed)
             {
-                currentSpeed -= (accelerationSpeed) *_delta;
+                currentSpeed -= accelerationSpeed * _deltaTime;
             }
         }
 
         private void Brake()
         {
             float maxSpeed = CurrentLane.speed;
-            currentSpeed = currentSpeed <= 0.01f ? 0 : Mathf.Clamp(Mathf.Lerp(currentSpeed, 0, _delta * brakeSpeed), 0, maxSpeed);
+            currentSpeed = currentSpeed <= 0.01f ? 0 : Mathf.Clamp(Mathf.Lerp(currentSpeed, 0, _deltaTime * brakeSpeed), 0, maxSpeed);
         }
 
         private void Steer()
         {
-            Vector3 target = Vector3.forward;
-            Vector3 heading = Vector3.forward;
-            float distanceLeft = _route.Length - _traveledDistance;
+            // Body rotation
+            Vector3 routePointDirection = _route.GetRoutePoint(_traveledDistance).Direction;
+            Quaternion targetRotation = Quaternion.LookRotation(routePointDirection);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, steeringSpeed * currentSpeed * _deltaTime);
 
-            if (distanceLeft > stoppingDistance)
-            {
-                target = _route.GetRoutePosition(_traveledDistance + stoppingDistance);
-                heading = target - transform.position;
-            }
-            else if (_route.loop && distanceLeft <= stoppingDistance)
-            {
-                //Correction for end of line in a loop
-                target = _route.GetRoutePosition(stoppingDistance);
-            }
-            
-            var dotDiright = Vector3.Dot(heading, transform.right);
-            if (dotDiright > 0)
+            // Steer rotation
+            Vector3 steerTarget = DistanceLeft < stoppingDistance
+                ? _route.GetRoutePosition(_route.Length)
+                : _route.GetRoutePosition(_traveledDistance + stoppingDistance);
+            Vector3 steerDirection = steerTarget - transform.position;
+            Quaternion steerRotation = Quaternion.LookRotation(steerDirection);
+
+            // Steer angle
+            var dotToRight = Vector3.Dot(steerDirection, transform.right);
+            if (dotToRight > 0)
             {
                 SteerToLeft = false;
             }
@@ -234,18 +264,13 @@ namespace _3Dimensions.TrafficSystem.Runtime
             {
                 SteerToLeft = true;
             }
+            SteeringAngle = Quaternion.Angle(_lastRotation, steerRotation); //degrees we must travel
+            // float angle = SteeringAngle;
+            // if (SteerToLeft)
+            // {
+            //     angle = -angle;
+            // }
 
-            Vector3 steerTargetDirection = new Vector3(target.x, transform.position.y, target.z);
-            Quaternion targetRotation = Quaternion.LookRotation(steerTargetDirection - transform.position);
-            SteeringAngle = Quaternion.Angle(transform.rotation, targetRotation); //degrees we must travel
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, SteeringAngle * steeringSpeed * currentSpeed * _delta); //steeringTime test left out and replaces by speed
-            float angle = SteeringAngle;
-            if (SteerToLeft)
-            {
-                angle = -angle;
-            }
-            objectDetector.transform.localEulerAngles = new Vector3(0, angle * 1.5f, 0);
-            
             _lastRotation = transform.rotation;
         }
 
@@ -253,28 +278,33 @@ namespace _3Dimensions.TrafficSystem.Runtime
         {
             if (_route)
             {
-                // Debug.Log("currentSpeed = " + currentSpeed);
+                if (debug) Debug.Log("currentSpeed = " + currentSpeed);
                 if (currentSpeed <= 0.01f) return;
                 
-                _traveledDistance += currentSpeed * _delta;
+                _traveledDistance += currentSpeed * _deltaTime;
                 transform.position = _route.GetRoutePosition(_traveledDistance);
-                transform.position += transform.forward * (currentSpeed * _delta);
             }
         }
 
 
         private bool ObstacleInFront()
         {
-            if (Physics.SphereCast(objectDetector.position, collisionDiameter, objectDetector.forward, out RaycastHit hit, DetectionDistance()))
+            Vector3 detectionPoint = DetectionPoint();
+            Vector3 direction = (detectionPoint - objectDetector.position).normalized;
+            float distance = Vector3.Distance(detectionPoint, objectDetector.position);
+
+            if (Physics.SphereCast(objectDetector.position, collisionDiameter, direction, out RaycastHit hit, distance))
             {
-                TrafficBlocker blocker = hit.collider.GetComponent<TrafficBlocker>();
                 VehicleAi otherVehicle = hit.collider.GetComponent<VehicleAi>();
+                if (otherVehicle == this) otherVehicle = null;
                 
                 if (otherVehicle)
                 {
+                    if (debug)  Debug.Log(otherVehicle.name + " is in front of vehicle", this);
                     return true;
                 }
                 
+                TrafficBlocker blocker = hit.collider.GetComponent<TrafficBlocker>();
                 if (blocker)
                 {
                     if (CurrentLane.blockersToIgnore.Contains(blocker))
@@ -282,9 +312,9 @@ namespace _3Dimensions.TrafficSystem.Runtime
                         return false;
                     }
                     
+                    if (debug) Debug.Log("blocker in front of vehicle", this);
                     return true;
                 }
-                
                 return false;
             }
             return false;
@@ -294,7 +324,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
         {
             Vector3 rayStartPoint = transform.position + (Vector3.up * trafficSurfaceDetectionHeight);
             RaycastHit[] hits = Physics.RaycastAll(rayStartPoint, Vector3.down, trafficSurfaceDetectionHeight * 2);
-
+            
             if (hits.Length == 0)
             {
                 Debug.LogWarning("Could not align with ground, no colliders found.", this);
@@ -329,7 +359,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             transform.position = closestHitPoint;
 
             Quaternion targetNormalRotation = Quaternion.FromToRotation(transform.up, closestHitNormal) * transform.rotation;
-            transform.rotation = Quaternion.RotateTowards(_lastRotation, targetNormalRotation, _delta * 5);
+            transform.rotation = Quaternion.RotateTowards(_lastRotation, targetNormalRotation, _deltaTime * 5);
 
             _lastRotation = transform.rotation;
         }
@@ -347,15 +377,24 @@ namespace _3Dimensions.TrafficSystem.Runtime
         
         private Vector3 DetectionPoint()
         {
-            return objectDetector.position + (objectDetector.forward * DetectionDistance());
+            float detectionDistance = DetectionDistance(); 
+            if (_route == null) return objectDetector.position + (objectDetector.forward * detectionDistance);
+            
+            Vector3 target = DistanceLeft < detectionDistance
+                ? _route.GetRoutePosition(_route.Length)
+                : _route.GetRoutePosition(_traveledDistance + detectionDistance);
+            
+            target.y = objectDetector.position.y;
+            return target;
         }
 
         private void OnDrawGizmos()
         {
             //Detector Gizmo
-            Gizmos.color = Color.red;
+            Gizmos.color = hasObstacleInFront ? Color.red : Color.green;
             Vector3 point = DetectionPoint();
-            Gizmos.DrawLine(objectDetector.position, point);
+            Vector3 offset = point - objectDetector.position;
+            Gizmos.DrawLine(objectDetector.position, objectDetector.position + offset);
             Gizmos.DrawSphere(point, collisionDiameter);
             
             //Surface Gizmo
@@ -365,12 +404,13 @@ namespace _3Dimensions.TrafficSystem.Runtime
             Gizmos.DrawLine(surfaceStart, surfaceEnd);
             
 #if UNITY_EDITOR
-            DrawString(vehicleState + "(" + currentSpeed.ToString("n2", CultureInfo.InvariantCulture) + ")", transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
+            DrawString(CurrentVehicleState + " (" + currentSpeed.ToString("n2", CultureInfo.InvariantCulture) + ")", transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
 #endif
         }
         
 #if UNITY_EDITOR
-        private void DrawString(string text, Vector3 worldPos, Color? colour = null) {
+        private void DrawString(string text, Vector3 worldPos, Color? colour = null) 
+        {
             UnityEditor.Handles.BeginGUI();
 
             var restoreColor = GUI.color;

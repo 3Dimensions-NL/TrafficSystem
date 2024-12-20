@@ -1,48 +1,56 @@
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
 using UnityEngine;
+
 namespace _3Dimensions.TrafficSystem.Runtime
 {
     [RequireComponent(typeof(BoxCollider))]
     public class TrafficTrigger : MonoBehaviour
     {
-        [SerializeField] private LayerMask layerMask;
-
-        public bool Triggered
+        public string trafficTag = "Traffic";
+        
+        [ShowInInspector] public bool Triggered
         {
             get { return _objectsInTrigger.Count > 0; }
         }
 
-        public float TimeTriggered => _timeTriggered;
-        private float _timeTriggered = 0;
+        public float timeTriggered;
 
         private BoxCollider _boxCollider;
         private List<GameObject> _objectsInTrigger = new();
+
+        public bool simulate = true;
+        public bool debug;
         
         private void Awake()
         {
             _boxCollider = GetComponent<BoxCollider>();
             _boxCollider.isTrigger = true;
-            _timeTriggered = 0;
+            timeTriggered = 0;
         }
-
+        
         private void Update()
         {
+            if (!simulate) return;
+            
             if (Triggered)
             {
-                _timeTriggered += Time.deltaTime;
+                timeTriggered += Time.deltaTime;
             }
             else
             {
-                _timeTriggered = 0;
+                timeTriggered = 0;
             }
-
-            _objectsInTrigger = _objectsInTrigger.Where(item => item != null).ToList();
+            
+            _objectsInTrigger = _objectsInTrigger.Where(item => item).ToList();
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (IsInLayerMask(other.gameObject, layerMask))
+            if (!simulate) return;
+            if (debug) Debug.Log("Enter with tag: " + other.tag);
+            if (other.tag.Equals(trafficTag))
             {
                 _objectsInTrigger.Add(other.gameObject);
             }
@@ -50,12 +58,9 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private void OnTriggerExit(Collider other)
         {
+            if (!simulate) return;
+            if (debug) Debug.Log("Exit with tag: " + other.tag);
             if (_objectsInTrigger.Contains(other.gameObject)) _objectsInTrigger.Remove(other.gameObject);
-        }
-
-        public bool IsInLayerMask(GameObject obj, LayerMask layerMask)
-        {
-            return ((layerMask.value & (1 << obj.layer)) > 0);
         }
 
         private void OnDrawGizmos()
@@ -66,6 +71,34 @@ namespace _3Dimensions.TrafficSystem.Runtime
             
             Gizmos.color = Color.yellow;
             Gizmos.DrawCube(_boxCollider.center, new Vector3(0.2f,0.2f,0.2f));
+            
+#if UNITY_EDITOR
+            DrawString("Wait time: " + timeTriggered.ToString("N1") + ")", transform.position + new Vector3(0, TrafficManager.Instance.gizmosHeight, 0));
+#endif
         }
+        
+#if UNITY_EDITOR
+        private void DrawString(string text, Vector3 worldPos, Color? colour = null) {
+            UnityEditor.Handles.BeginGUI();
+
+            var restoreColor = GUI.color;
+
+            if (colour.HasValue) GUI.color = colour.Value;
+            var view = UnityEditor.SceneView.currentDrawingSceneView;
+            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
+
+            if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
+            {
+                GUI.color = restoreColor;
+                UnityEditor.Handles.EndGUI();
+                return;
+            }
+            
+            Vector2 size = GUI.skin.label.CalcSize(new GUIContent(text));
+            GUI.Label(new Rect(screenPos.x - (size.x / 2), Screen.height - screenPos.y - (size.y * 4), size.x, size.y), text);
+            GUI.color = restoreColor;
+            UnityEditor.Handles.EndGUI();
+        }
+#endif
     }
 }

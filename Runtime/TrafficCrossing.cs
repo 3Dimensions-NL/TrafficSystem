@@ -37,7 +37,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
                     {
                         if (laneToUnblock.trafficInLane.Count > 0)
                         {
-                            laneToUnblock.trafficInLane[0].vehicleState = VehicleAi.VehicleState.ForcedDrive;
+                            laneToUnblock.trafficInLane[0].targetVehicleState = VehicleAi.VehicleState.ForcedDrive;
                             Debug.Log("Forcing a car to drive");
                         }
                     }
