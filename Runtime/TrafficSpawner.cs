@@ -125,16 +125,17 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 return;
             }
             
-            Physics.Raycast(laneToSpawnIn.waypoints[0].transform.position + (Vector3.up * (terrainDetectionHeight * 0.5f)), Vector3.down, out RaycastHit hit, terrainDetectionHeight);
+            RaycastHit[] hits = Physics.RaycastAll(laneToSpawnIn.waypoints[0].transform.position + (Vector3.up * (terrainDetectionHeight * 0.5f)), Vector3.down, terrainDetectionHeight);
+            RaycastHit? firstTrafficSurfaceHit = hits.FirstOrDefault(hit => hit.collider.GetComponent<TrafficSurface>() != null);
 
-            if (hit.collider.GetComponent<TrafficSurface>() == null)
+            if (!firstTrafficSurfaceHit.HasValue)
             {
                 Debug.LogWarning("Could not spawn vehicle, no TrafficSurface found.", this);
                 return;
             }
-            
+
             vehicleCounter++;
-            Vector3 startPosition = hit.point;
+            Vector3 startPosition = firstTrafficSurfaceHit.Value.point;
             if (debug) Debug.Log("startPosition: " + startPosition, this);
             Quaternion startRotation = Quaternion.LookRotation(laneToSpawnIn.waypoints[1].transform.position - laneToSpawnIn.waypoints[0].transform.position);
             
