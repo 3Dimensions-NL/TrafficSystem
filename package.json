@@ -15,5 +15,12 @@
     "dependencies": {
         "com.unity.splines": "2.6.1",
         "com.unity.mathematics": "1.2.6"
-    }
+    },
+    "samples": [
+        {
+            "displayName": "Sample assets",
+            "description": "Contains sample traffic assets to showcase the functionality",
+            "path": "Samples~"
+        }
+    ]
 }
