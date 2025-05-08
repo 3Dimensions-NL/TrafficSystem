@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace _3Dimensions.TrafficSystem.Runtime
@@ -10,7 +9,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
     {
         public string trafficTag = "Traffic";
         
-        [ShowInInspector] public bool Triggered
+        public bool Triggered
         {
             get { return _objectsInTrigger.Count > 0; }
         }

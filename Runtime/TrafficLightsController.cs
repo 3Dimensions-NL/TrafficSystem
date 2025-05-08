@@ -1,7 +1,5 @@
 using System;
-using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 namespace _3Dimensions.TrafficSystem.Runtime
 {
