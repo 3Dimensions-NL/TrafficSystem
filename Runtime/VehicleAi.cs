@@ -438,23 +438,38 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private void AlignWithGround()
         {
-            // Step 0: Align the Vehicle AI GameObject to the ground
+            // Step 0: Perform multiple raycasts and track the nearest valid hit with a TrafficSurface
             Ray groundRay = new Ray(transform.position + (Vector3.up * trafficSurfaceDetectionHeight), Vector3.down);
-            if (Physics.Raycast(groundRay, out RaycastHit hit, trafficSurfaceDetectionHeight * 2))
+            RaycastHit[] hits = Physics.RaycastAll(groundRay, trafficSurfaceDetectionHeight * 2);
+
+            RaycastHit? nearestValidHit = null;
+            float nearestDistance = float.MaxValue;
+
+            foreach (var hit in hits)
             {
                 if (hit.collider.GetComponent<TrafficSurface>())
                 {
-                    Vector3 pos = transform.position;
-                    pos.y = hit.point.y;
-                    transform.position = pos;
+                    float distance = Vector3.Distance(transform.position, hit.point);
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestValidHit = hit;
+                    }
                 }
+            }
+
+            // If we found a valid hit, adjust the position
+            if (nearestValidHit.HasValue)
+            {
+                Vector3 pos = transform.position;
+                pos.y = nearestValidHit.Value.point.y;
+                transform.position = pos;
             }
             else
             {
-                Debug.LogError("Could not find ground for vehicle.", this);
+                Debug.LogError("Could not find a valid TrafficSurface for alignment.", this);
             }
-            
-            
+
             // Ensure wheels exist
             if (_farthestFrontLeftWheel == null || _farthestFrontRightWheel == null ||
                 _farthestRearLeftWheel == null || _farthestRearRightWheel == null)
@@ -477,19 +492,19 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
             // Step 3: Adjust the model's position based on wheel average height
             float averageHeight = ((averageFrontHeight + averageRearHeight) / 2) - transform.position.y;
-            Debug.Log("Average height = " + averageHeight);
+            if (debug) Debug.Log("Average height = " + averageHeight);
             averageHeight -= _startHeight;
             Vector3 localPosition = modelTransform.localPosition;
             localPosition.y = averageHeight; // Offset for the root object
             modelTransform.localPosition = localPosition;
-            
+
             // Step 4: Calculate pitch (front-to-back tilt)
             float pitchAngle = -Mathf.Atan2(averageFrontHeight - averageRearHeight, _frontLeftOffset.z - _rearLeftOffset.z) * Mathf.Rad2Deg;
 
             // Step 5: Calculate roll (left-to-right tilt) - Adjust for inverted roll by negating the difference
             float rollAngle = -Mathf.Atan2(averageRightHeight - averageLeftHeight, _frontLeftOffset.x - _frontRightOffset.x) * Mathf.Rad2Deg;
             rollAngle += 180f;
-            
+
             // Step 6: Combine pitch and roll into a single rotation while preserving yaw
             Quaternion targetRotation = Quaternion.Euler(
                 pitchAngle,
@@ -499,7 +514,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
             // Step 7: Smoothly apply the calculated rotation to modelTransform
             modelTransform.localRotation = Quaternion.RotateTowards(modelTransform.localRotation, targetRotation, _deltaTime * 150);
-            
+
             // Debugging visualization
             if (debug)
             {
@@ -507,7 +522,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 Debug.DrawLine(_farthestRearLeftWheel.transform.position, _farthestRearRightWheel.transform.position, Color.red);   // Rear
                 Debug.DrawLine(_farthestFrontLeftWheel.transform.position, _farthestRearLeftWheel.transform.position, Color.green); // Left
                 Debug.DrawLine(_farthestFrontRightWheel.transform.position, _farthestRearRightWheel.transform.position, Color.yellow); // Right
-                Debug.Log($"Aligning vehicle: Pitch={pitchAngle}, Roll={rollAngle}, Height={averageHeight}");
+                Debug.Log($"Aligning vehicle: Pitch={pitchAngle}, Roll={rollAngle}, Nearest TrafficSurface Distance={nearestDistance}");
             }
         }
 
