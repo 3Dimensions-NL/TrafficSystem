@@ -4879,7 +4879,7 @@ MonoBehaviour:
   - {fileID: 498169354}
   - {fileID: 583315034}
   - {fileID: 789217599}
-  lastPosition: {x: 0, y: 0, z: 0}
+  lastPosition: {x: 0, y: 15.14, z: 0}
 --- !u!1 &1069873545
 GameObject:
   m_ObjectHideFlags: 0
@@ -5959,7 +5959,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 88712355856446901, guid: c8189355c64aa794fb2603d2d2ba9a35, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 88712355856446901, guid: c8189355c64aa794fb2603d2d2ba9a35, type: 3}
       propertyPath: m_LocalPosition.z
