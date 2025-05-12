@@ -75,6 +75,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
         private VehicleWheel _farthestRearLeftWheel;
         private VehicleWheel _farthestRearRightWheel;
 
+        private Vector3 _frontLeftOffset, _frontRightOffset, _rearLeftOffset, _rearRightOffset;
+        private float _startHeight;
         
         private void Awake()
         {
@@ -110,77 +112,19 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 Debug.LogWarning("No wheels assigned to the vehicle; cannot align with ground.", this);
                 return;
             }
+
+            // Assign wheels and determine offsets
+            CategorizeAndAssignWheels();
+
+            // Calculate offsets for wheel heights in local space
+            if (_farthestFrontLeftWheel) _frontLeftOffset = transform.InverseTransformPoint(_farthestFrontLeftWheel.transform.position);
+            if (_farthestFrontRightWheel) _frontRightOffset = transform.InverseTransformPoint(_farthestFrontRightWheel.transform.position);
+            if (_farthestRearLeftWheel) _rearLeftOffset = transform.InverseTransformPoint(_farthestRearLeftWheel.transform.position);
+            if (_farthestRearRightWheel) _rearRightOffset = transform.InverseTransformPoint(_farthestRearRightWheel.transform.position);
             
-            // Lookup wheels in local space
-            // Stap 1: Categoriseer wielen in groepen
-            List<VehicleWheel> frontLeftWheels = new List<VehicleWheel>();
-            List<VehicleWheel> frontRightWheels = new List<VehicleWheel>();
-            List<VehicleWheel> rearLeftWheels = new List<VehicleWheel>();
-            List<VehicleWheel> rearRightWheels = new List<VehicleWheel>();
-
-            foreach (VehicleWheel wheel in _wheels)
-            {
-                // Bepaal de lokale positie van het wiel ten opzichte van het voertuig
-                Vector3 localPosition = transform.InverseTransformPoint(wheel.transform.position);
-
-                // Plaats het wiel in de juiste groep
-                if (localPosition.z >= 0) // Voorwielen
-                {
-                    if (localPosition.x < 0)
-                    {
-                        frontLeftWheels.Add(wheel); // Linksvoor
-                    }
-                    else
-                    {
-                        frontRightWheels.Add(wheel); // Rechtsvoor
-                    }
-                }
-                else // Achterwielen
-                {
-                    if (localPosition.x < 0)
-                    {
-                        rearLeftWheels.Add(wheel); // Linksonder
-                    }
-                    else
-                    {
-                        rearRightWheels.Add(wheel); // Rechtsonder
-                    }
-                }
-            }
-
-            // Stap 2: Bepaal welk wiel het verste naar voren of achteren zit binnen elke groep
-            _farthestFrontLeftWheel = GetFarthestWheel(frontLeftWheels, true); // Verste vooraan
-            _farthestFrontRightWheel = GetFarthestWheel(frontRightWheels, true);
-            _farthestRearLeftWheel = GetFarthestWheel(rearLeftWheels, false); // Verste achteraan
-            _farthestRearRightWheel = GetFarthestWheel(rearRightWheels, false);
-
-            // Hulpmethode om het verste wiel in een lijst te vinden
-            VehicleWheel GetFarthestWheel(List<VehicleWheel> wheels, bool isFront)
-            {
-                VehicleWheel farthestWheel = null;
-                float extremeZ = isFront ? float.MinValue : float.MaxValue;
-
-                foreach (VehicleWheel wheel in wheels)
-                {
-                    Vector3 localPosition = transform.InverseTransformPoint(wheel.transform.position);
-
-                    // Voor voorwielen zoeken we de grootste Z-waarde (meest vooraan).
-                    // Voor achterwielen zoeken we de kleinste Z-waarde (meest achteraan).
-                    if ((isFront && localPosition.z > extremeZ) || (!isFront && localPosition.z < extremeZ))
-                    {
-                        extremeZ = localPosition.z;
-                        farthestWheel = wheel;
-                    }
-                }
-
-                return farthestWheel;
-            }
-
-            // Check if we found all the needed wheels
-            if (_farthestFrontLeftWheel == null || _farthestRearRightWheel == null || _farthestFrontRightWheel == null || _farthestRearLeftWheel == null)
-            {
-                if (debug) Debug.LogError("Could not determine all extreme wheels for alignment.", this);
-            }
+            _startHeight = (_frontLeftOffset.y + _frontRightOffset.y + _rearLeftOffset.y + _rearRightOffset.y) / 4;
+            
+            AlignWithGround();
         }
 
         private void OnDestroy()
@@ -218,32 +162,35 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
             if (_route)
             {
-                //Check waypoint
-                Vector3 waypointRelativePosition = _route.waypoints[currentWaypoint].transform.position;
-                waypointRelativePosition.y = transform.position.y;
-                if (Vector3.Distance(transform.position, waypointRelativePosition) < stoppingDistance)
+                if (_route.waypoints.Count != 0)
                 {
-                    currentWaypoint++;
-                }
+                    //Check waypoint
+                    Vector3 waypointRelativePosition = _route.waypoints[currentWaypoint].transform.position;
+                    waypointRelativePosition.y = transform.position.y;
+                    if (Vector3.Distance(transform.position, waypointRelativePosition) < stoppingDistance)
+                    {
+                        currentWaypoint++;
+                    }
                 
-                //Check for end of route
-                if (_traveledDistance >= _route.Length)
-                {
-                    if (_route.loop)
+                    //Check for end of route
+                    if (_traveledDistance >= _route.Length)
                     {
-                        _traveledDistance -= _route.Length;
+                        if (_route.loop)
+                        {
+                            _traveledDistance -= _route.Length;
+                        }
+                        else
+                        {
+                            Destroy(gameObject);
+                        }
                     }
-                    else
-                    {
-                        Destroy(gameObject);
-                    }
-                }
 
-                //Handle movement and steering
-                hasObstacleInFront = ObstacleInFront();
-                Steer();
-                HandleCarState();
-                HandleMovement();
+                    //Handle movement and steering
+                    hasObstacleInFront = ObstacleInFront();
+                    Steer();
+                    HandleCarState();
+                    HandleMovement();
+                }
             }
 
             if (alignWithGround) AlignWithGround();
@@ -417,63 +364,134 @@ namespace _3Dimensions.TrafficSystem.Runtime
             return false;
         }
         
+        private void CategorizeAndAssignWheels()
+        {
+            // Stap 1: Categoriseer wielen in groepen
+            List<VehicleWheel> frontLeftWheels = new List<VehicleWheel>();
+            List<VehicleWheel> frontRightWheels = new List<VehicleWheel>();
+            List<VehicleWheel> rearLeftWheels = new List<VehicleWheel>();
+            List<VehicleWheel> rearRightWheels = new List<VehicleWheel>();
+
+            foreach (VehicleWheel wheel in _wheels)
+            {
+                // Bepaal de lokale positie van het wiel ten opzichte van het voertuig
+                Vector3 localPosition = transform.InverseTransformPoint(wheel.transform.position);
+
+                // Plaats het wiel in de juiste groep
+                if (localPosition.z >= 0) // Voorwielen
+                {
+                    if (localPosition.x < 0)
+                    {
+                        frontLeftWheels.Add(wheel); // Linksvoor
+                    }
+                    else
+                    {
+                        frontRightWheels.Add(wheel); // Rechtsvoor
+                    }
+                }
+                else // Achterwielen
+                {
+                    if (localPosition.x < 0)
+                    {
+                        rearLeftWheels.Add(wheel); // Linksonder
+                    }
+                    else
+                    {
+                        rearRightWheels.Add(wheel); // Rechtsonder
+                    }
+                }
+            }
+
+            // Stap 2: Bepaal welk wiel het verste naar voren of achteren zit binnen elke groep
+            _farthestFrontLeftWheel = GetFarthestWheel(frontLeftWheels, true); // Verste vooraan
+            _farthestFrontRightWheel = GetFarthestWheel(frontRightWheels, true);
+            _farthestRearLeftWheel = GetFarthestWheel(rearLeftWheels, false); // Verste achteraan
+            _farthestRearRightWheel = GetFarthestWheel(rearRightWheels, false);
+
+            // Hulpmethode om het verste wiel in een lijst te vinden
+            VehicleWheel GetFarthestWheel(List<VehicleWheel> wheels, bool isFront)
+            {
+                VehicleWheel farthestWheel = null;
+                float extremeZ = isFront ? float.MinValue : float.MaxValue;
+
+                foreach (VehicleWheel wheel in wheels)
+                {
+                    Vector3 localPosition = transform.InverseTransformPoint(wheel.transform.position);
+
+                    // Voor voorwielen zoeken we de grootste Z-waarde (meest vooraan).
+                    // Voor achterwielen zoeken we de kleinste Z-waarde (meest achteraan).
+                    if ((isFront && localPosition.z > extremeZ) || (!isFront && localPosition.z < extremeZ))
+                    {
+                        extremeZ = localPosition.z;
+                        farthestWheel = wheel;
+                    }
+                }
+
+                return farthestWheel;
+            }
+
+            // Check if we found all the needed wheels
+            if (_farthestFrontLeftWheel == null || _farthestRearRightWheel == null || _farthestFrontRightWheel == null || _farthestRearLeftWheel == null)
+            {
+                if (debug) Debug.LogError("Could not determine all extreme wheels for alignment.", this);
+            }
+        }
+
         private void AlignWithGround()
         {
-            if (_farthestFrontLeftWheel == null || _farthestRearRightWheel == null || _farthestFrontRightWheel == null || _farthestRearLeftWheel == null)
+            // Ensure wheels exist
+            if (_farthestFrontLeftWheel == null || _farthestFrontRightWheel == null ||
+                _farthestRearLeftWheel == null || _farthestRearRightWheel == null)
             {
                 Debug.LogError("Could not determine all extreme wheels for alignment.", this);
                 return;
             }
 
-            // Raycast to determine hit points for the extreme wheels
-            Vector3[] hitPoints = new Vector3[4];
-            VehicleWheel[] extremeWheels = { _farthestFrontLeftWheel, _farthestRearRightWheel, _farthestFrontRightWheel, _farthestRearLeftWheel };
+            // Step 1: Calculate heights for the four wheels
+            float frontLeftHeight = _farthestFrontLeftWheel.transform.position.y;
+            float frontRightHeight = _farthestFrontRightWheel.transform.position.y;
+            float rearLeftHeight = _farthestRearLeftWheel.transform.position.y;
+            float rearRightHeight = _farthestRearRightWheel.transform.position.y;
 
-            for (int i = 0; i < extremeWheels.Length; i++)
-            {
-                Vector3 rayStartPoint = extremeWheels[i].transform.position + Vector3.up * trafficSurfaceDetectionHeight;
-                if (Physics.Raycast(rayStartPoint, Vector3.down, out RaycastHit hit, trafficSurfaceDetectionHeight * 2))
-                {
-                    hitPoints[i] = hit.point;
-                }
-                else
-                {
-                    Debug.LogWarning($"Could not find ground for wheel {extremeWheels[i].name}.", this);
-                    return;
-                }
-            }
+            // Step 2: Calculate average heights for front, rear, left, and right wheels
+            float averageFrontHeight = (frontLeftHeight + frontRightHeight) / 2;
+            float averageRearHeight = (rearLeftHeight + rearRightHeight) / 2;
+            float averageLeftHeight = (frontLeftHeight + rearLeftHeight) / 2;
+            float averageRightHeight = (frontRightHeight + rearRightHeight) / 2;
 
-            // Calculate the average hit points for front and rear wheels
-            Vector3 frontAverageHitPoint = (hitPoints[0] + hitPoints[2]) / 2; // Front left and front right
-            Vector3 rearAverageHitPoint = (hitPoints[1] + hitPoints[3]) / 2;  // Rear left and rear right
-
-            // Calculate forward direction based on height difference between front and rear
-            Vector3 forwardDirection = (frontAverageHitPoint - rearAverageHitPoint).normalized;
-
-            // Calculate the average hit point for left and right wheels (determines roll)
-            Vector3 leftAverageHitPoint = (hitPoints[0] + hitPoints[3]) / 2; // Front left and rear left
-            Vector3 rightAverageHitPoint = (hitPoints[2] + hitPoints[1]) / 2; // Front right and rear right
-
-            // Calculate the right direction (horizontal alignment)
-            Vector3 rightDirection = (rightAverageHitPoint - leftAverageHitPoint).normalized;
-
-            // Correct the up vector using the cross product of forward and right direction
-            Vector3 upDirection = Vector3.Cross(forwardDirection, rightDirection).normalized;
-
-            // Optionally, adjust the vehicle's position to match the terrain
-            Vector3 averagePosition = (frontAverageHitPoint + rearAverageHitPoint + leftAverageHitPoint + rightAverageHitPoint) / 4;
-            transform.position = new Vector3(transform.position.x, averagePosition.y, transform.position.z);
-
-            // Apply the calculated rotation based on forward and up direction
-            Quaternion targetRotation = Quaternion.LookRotation(forwardDirection, upDirection);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _deltaTime * 150);
-
-            Debug.DrawLine(frontAverageHitPoint, rearAverageHitPoint, Color.blue); // Forward direction
-            Debug.DrawLine(leftAverageHitPoint, rightAverageHitPoint, Color.red);  // Right direction
-            Debug.DrawRay(transform.position, upDirection * 2, Color.green);       // Up direction
-            Debug.Log($"Forward: {forwardDirection}, Right: {rightDirection}, Up: {upDirection}");
+            // Step 3: Adjust the model's position based on wheel average height
+            float averageHeight = -((averageFrontHeight + averageRearHeight) / 2);
+            averageHeight += _startHeight;
+            Vector3 localPosition = modelTransform.localPosition;
+            localPosition.y = transform.position.y - averageHeight; // Offset for the root object
+            modelTransform.localPosition = localPosition;
             
-            _lastRotation = transform.rotation;
+            // Step 4: Calculate pitch (front-to-back tilt)
+            float pitchAngle = -Mathf.Atan2(averageFrontHeight - averageRearHeight, _frontLeftOffset.z - _rearLeftOffset.z) * Mathf.Rad2Deg;
+
+            // Step 5: Calculate roll (left-to-right tilt) - Adjust for inverted roll by negating the difference
+            float rollAngle = -Mathf.Atan2(averageRightHeight - averageLeftHeight, _frontLeftOffset.x - _frontRightOffset.x) * Mathf.Rad2Deg;
+            rollAngle += 180f;
+            
+            // Step 6: Combine pitch and roll into a single rotation while preserving yaw
+            Quaternion targetRotation = Quaternion.Euler(
+                pitchAngle,
+                modelTransform.localEulerAngles.y, // Preserve yaw (heading)
+                rollAngle
+            );
+
+            // Step 7: Smoothly apply the calculated rotation to modelTransform
+            modelTransform.localRotation = Quaternion.RotateTowards(modelTransform.localRotation, targetRotation, _deltaTime * 150);
+            
+            // Debugging visualization
+            if (debug)
+            {
+                Debug.DrawLine(_farthestFrontLeftWheel.transform.position, _farthestFrontRightWheel.transform.position, Color.blue); // Front
+                Debug.DrawLine(_farthestRearLeftWheel.transform.position, _farthestRearRightWheel.transform.position, Color.red);   // Rear
+                Debug.DrawLine(_farthestFrontLeftWheel.transform.position, _farthestRearLeftWheel.transform.position, Color.green); // Left
+                Debug.DrawLine(_farthestFrontRightWheel.transform.position, _farthestRearRightWheel.transform.position, Color.yellow); // Right
+                Debug.Log($"Aligning vehicle: Pitch={pitchAngle}, Roll={rollAngle}, Height={averageHeight}");
+            }
         }
 
         private float DetectionDistance()
