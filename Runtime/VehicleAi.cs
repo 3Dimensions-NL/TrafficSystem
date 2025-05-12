@@ -60,6 +60,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public bool SteerToLeft { get; private set; }
 
         public Transform modelTransform;
+        public float modelAligningSpeed = 100f;
         
         private TrafficRoute _route;
         private float _deltaTime;
@@ -513,7 +514,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             );
 
             // Step 7: Smoothly apply the calculated rotation to modelTransform
-            modelTransform.localRotation = Quaternion.RotateTowards(modelTransform.localRotation, targetRotation, _deltaTime * 150);
+            modelTransform.localRotation = Quaternion.RotateTowards(modelTransform.localRotation, targetRotation, _deltaTime * modelAligningSpeed);
 
             // Debugging visualization
             if (debug)
