@@ -123,7 +123,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (_farthestRearRightWheel) _rearRightOffset = transform.InverseTransformPoint(_farthestRearRightWheel.transform.position);
             
             _startHeight = (_frontLeftOffset.y + _frontRightOffset.y + _rearLeftOffset.y + _rearRightOffset.y) / 4;
-            Debug.Log("Start height = " + _startHeight);
             AlignWithGround();
         }
 
