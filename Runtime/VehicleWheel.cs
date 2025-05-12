@@ -57,6 +57,15 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 _oldSteering = transform.localRotation;
             }
 
+            // Cast a ray to detect the ground directly below the wheel
+            Ray ray = new Ray(transform.position, -transform.up);
+            if (Physics.Raycast(ray, out RaycastHit hit, wheelRadius * 2))
+            {
+                // Set the wheel's position based on the ground height plus its radius
+                Vector3 targetPosition = hit.point + (transform.up * wheelRadius);
+                transform.position = targetPosition;
+            }
+
             Vector3 displacement = transform.position - _oldPos;
             float speed = displacement.magnitude / Time.deltaTime;
             float angularVelocity = speed / wheelRadius;

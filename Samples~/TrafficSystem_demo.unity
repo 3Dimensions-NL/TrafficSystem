@@ -977,15 +977,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
   laneToSpawnIn: {fileID: 376356610}
+  spawnTag: Traffic
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
   maxSpawnTime: 15
+  terrainDetectionHeight: 50
   startState: 1
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
   canSpawn: 1
+  debug: 0
 --- !u!4 &298750618
 Transform:
   m_ObjectHideFlags: 0
@@ -3098,15 +3101,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
   laneToSpawnIn: {fileID: 583315034}
+  spawnTag: Traffic
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
   maxSpawnTime: 15
+  terrainDetectionHeight: 50
   startState: 1
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
   canSpawn: 1
+  debug: 0
 --- !u!4 &793669924
 Transform:
   m_ObjectHideFlags: 0
@@ -3243,15 +3249,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
   laneToSpawnIn: {fileID: 789217599}
+  spawnTag: Traffic
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
   maxSpawnTime: 15
+  terrainDetectionHeight: 50
   startState: 1
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
   canSpawn: 1
+  debug: 0
 --- !u!4 &840944043
 Transform:
   m_ObjectHideFlags: 0
@@ -4158,13 +4167,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010655502}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0.7374717, y: -0, z: -0, w: 0.675378}
   m_LocalPosition: {x: 2.511, y: -0.441, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1701898176}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 95.03299, y: 0, z: 0}
 --- !u!64 &1010655504
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5290,15 +5299,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
   laneToSpawnIn: {fileID: 498169354}
+  spawnTag: Traffic
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
   maxSpawnTime: 15
+  terrainDetectionHeight: 50
   startState: 1
   onSpawn:
     m_PersistentCalls:
       m_Calls: []
   canSpawn: 1
+  debug: 0
 --- !u!4 &1258462214
 Transform:
   m_ObjectHideFlags: 0
