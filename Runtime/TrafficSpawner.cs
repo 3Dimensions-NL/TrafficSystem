@@ -128,7 +128,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             RaycastHit[] hits = Physics.RaycastAll(laneToSpawnIn.waypoints[0].transform.position + (Vector3.up * (terrainDetectionHeight * 0.5f)), Vector3.down, terrainDetectionHeight);
             RaycastHit? firstTrafficSurfaceHit = hits.FirstOrDefault(hit => hit.collider.GetComponent<TrafficSurface>() != null);
 
-            if (!firstTrafficSurfaceHit.HasValue)
+            if (!firstTrafficSurfaceHit.Value.collider)
             {
                 Debug.LogWarning("Could not spawn vehicle, no TrafficSurface found.", this);
                 return;
