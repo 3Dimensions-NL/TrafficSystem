@@ -49,7 +49,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public float collisionDiameter = 1f;
         public float stoppingDistance = 2;
         public float detectionHeight = 1;
-        public float trafficSurfaceDetectionHeight = 1;
+        public float trafficSurfaceDetectionHeight = 2;
         
         private Quaternion _lastRotation;
         private Vector3 _lastPosition;
@@ -365,7 +365,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
         
         private void CategorizeAndAssignWheels()
         {
-            // Stap 1: Categoriseer wielen in groepen
+            // Step 1: Categorize wheels into groups
             List<VehicleWheel> frontLeftWheels = new List<VehicleWheel>();
             List<VehicleWheel> frontRightWheels = new List<VehicleWheel>();
             List<VehicleWheel> rearLeftWheels = new List<VehicleWheel>();
@@ -373,41 +373,41 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
             foreach (VehicleWheel wheel in _wheels)
             {
-                // Bepaal de lokale positie van het wiel ten opzichte van het voertuig
+                // Determine the local position of the wheel relative to the vehicle
                 Vector3 localPosition = transform.InverseTransformPoint(wheel.transform.position);
 
-                // Plaats het wiel in de juiste groep
-                if (localPosition.z >= 0) // Voorwielen
+                // Place the wheel in the correct group
+                if (localPosition.z >= 0) // Front wheels
                 {
                     if (localPosition.x < 0)
                     {
-                        frontLeftWheels.Add(wheel); // Linksvoor
+                        frontLeftWheels.Add(wheel); // Front left
                     }
                     else
                     {
-                        frontRightWheels.Add(wheel); // Rechtsvoor
+                        frontRightWheels.Add(wheel); // Front right
                     }
                 }
-                else // Achterwielen
+                else // Rear wheels
                 {
                     if (localPosition.x < 0)
                     {
-                        rearLeftWheels.Add(wheel); // Linksonder
+                        rearLeftWheels.Add(wheel); // Rear left
                     }
                     else
                     {
-                        rearRightWheels.Add(wheel); // Rechtsonder
+                        rearRightWheels.Add(wheel); // Rear right
                     }
                 }
             }
 
-            // Stap 2: Bepaal welk wiel het verste naar voren of achteren zit binnen elke groep
-            _farthestFrontLeftWheel = GetFarthestWheel(frontLeftWheels, true); // Verste vooraan
+            // Step 2: Determine which wheel is the furthest forward or backward within each group
+            _farthestFrontLeftWheel = GetFarthestWheel(frontLeftWheels, true); // Furthest forward
             _farthestFrontRightWheel = GetFarthestWheel(frontRightWheels, true);
-            _farthestRearLeftWheel = GetFarthestWheel(rearLeftWheels, false); // Verste achteraan
+            _farthestRearLeftWheel = GetFarthestWheel(rearLeftWheels, false); // Furthest backward
             _farthestRearRightWheel = GetFarthestWheel(rearRightWheels, false);
 
-            // Hulpmethode om het verste wiel in een lijst te vinden
+            // Helper method to find the furthest wheel in a list
             VehicleWheel GetFarthestWheel(List<VehicleWheel> wheels, bool isFront)
             {
                 VehicleWheel farthestWheel = null;
@@ -417,8 +417,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 {
                     Vector3 localPosition = transform.InverseTransformPoint(wheel.transform.position);
 
-                    // Voor voorwielen zoeken we de grootste Z-waarde (meest vooraan).
-                    // Voor achterwielen zoeken we de kleinste Z-waarde (meest achteraan).
+                    // For front wheels we look for the largest Z value (furthest forward).
+                    // For rear wheels we look for the smallest Z value (furthest backward).
                     if ((isFront && localPosition.z > extremeZ) || (!isFront && localPosition.z < extremeZ))
                     {
                         extremeZ = localPosition.z;
@@ -438,6 +438,23 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private void AlignWithGround()
         {
+            // Step 0: Align the Vehicle AI GameObject to the ground
+            Ray groundRay = new Ray(transform.position + (Vector3.up * trafficSurfaceDetectionHeight), Vector3.down);
+            if (Physics.Raycast(groundRay, out RaycastHit hit, trafficSurfaceDetectionHeight * 2))
+            {
+                if (hit.collider.GetComponent<TrafficSurface>())
+                {
+                    Vector3 pos = transform.position;
+                    pos.y = hit.point.y;
+                    transform.position = pos;
+                }
+            }
+            else
+            {
+                Debug.LogError("Could not find ground for vehicle.", this);
+            }
+            
+            
             // Ensure wheels exist
             if (_farthestFrontLeftWheel == null || _farthestFrontRightWheel == null ||
                 _farthestRearLeftWheel == null || _farthestRearRightWheel == null)
