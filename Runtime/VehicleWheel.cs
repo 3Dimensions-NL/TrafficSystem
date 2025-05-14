@@ -7,6 +7,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public Transform wheelMeshRotatableTransform;
         public SnapAxis steeringAxis = SnapAxis.Y;
         public SnapAxis rotationAxis = SnapAxis.X;
+        public bool invertRotation = false;
+        
         public float wheelRadius = 0.5f;
 
         public bool steering;
@@ -70,6 +72,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             float speed = displacement.magnitude / Time.deltaTime;
             float angularVelocity = speed / wheelRadius;
             float angularVelocityDegrees = angularVelocity * Mathf.Rad2Deg * Time.deltaTime;
+            angularVelocityDegrees = invertRotation ? -angularVelocityDegrees : angularVelocityDegrees;
             
             switch (rotationAxis)
             {
