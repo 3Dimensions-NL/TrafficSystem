@@ -131,6 +131,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 1180779187936487653}
   steeringAxis: 2
   rotationAxis: 2
+  invertRotation: 0
   wheelRadius: 0.5
   steering: 0
   steeringFactor: 0.8
@@ -766,6 +767,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 3123933842896159983}
   steeringAxis: 2
   rotationAxis: 2
+  invertRotation: 0
   wheelRadius: 0.5
   steering: 1
   steeringFactor: 0.8
@@ -933,6 +935,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 5660641266295778217}
   steeringAxis: 2
   rotationAxis: 2
+  invertRotation: 0
   wheelRadius: 0.5
   steering: 0
   steeringFactor: 0.8
@@ -1016,6 +1019,7 @@ MonoBehaviour:
   wheelMeshRotatableTransform: {fileID: 5251575049410615797}
   steeringAxis: 2
   rotationAxis: 2
+  invertRotation: 0
   wheelRadius: 0.5
   steering: 1
   steeringFactor: 0.8
@@ -1250,6 +1254,7 @@ MonoBehaviour:
   detectionHeight: 1
   trafficSurfaceDetectionHeight: 1
   modelTransform: {fileID: 0}
+  modelAligningSpeed: 10
   simulate: 1
   debug: 0
 --- !u!114 &5910587107572792632

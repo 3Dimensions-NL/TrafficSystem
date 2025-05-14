@@ -479,7 +479,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             {
                 Vector3 pos = transform.position;
                 pos.y = nearestValidHit.Value.point.y;
-                transform.position = pos;
+                transform.position = Vector3.Lerp(transform.position, pos, _deltaTime * modelAligningSpeed);
             }
             else
             {
@@ -511,7 +511,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (debug) Debug.Log("Average height = " + averageHeight);
             averageHeight -= _startHeight;
             Vector3 localPosition = modelTransform.localPosition;
-            localPosition.y = averageHeight; // Offset for the root object
+            localPosition.y = Mathf.Lerp(localPosition.y, averageHeight, _deltaTime * modelAligningSpeed); // Offset for the root object
             modelTransform.localPosition = localPosition;
 
             // Step 4: Calculate pitch (front-to-back tilt)
