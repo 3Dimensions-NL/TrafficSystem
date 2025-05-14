@@ -178,7 +178,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (debug) Debug.Log("Spawned position after Ai setup = " + spawnedVehicle.transform.position, spawnedVehicle);
 
             laneToSpawnIn.trafficInLane.Add(vehicleAi);
-            TrafficManager.Instance.spawnedVehicles.Add(spawnedVehicle);
             
             onSpawn?.Invoke();
         }

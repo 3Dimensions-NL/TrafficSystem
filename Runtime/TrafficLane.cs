@@ -49,16 +49,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         private void Start()
         {
-            if (spawnCollection && Application.isPlaying)
-            {
-                // Skip start of lane and spawn vehicles along the lane
-                for (float dist = Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y); dist < Length; dist += Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y))
-                {
-                    int randomIndex = Random.Range(0, spawnCollection.prefabs.Length);
-                    GameObject vehicle = spawnCollection.prefabs[randomIndex];
-                    SpawnVehicle(vehicle, dist);
-                }
-            }
+            SpawnVehiclesAlongLane();
         }
 
         // Update is called once per frame
@@ -206,8 +197,22 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (splineContainer.Spline == null) return 0;
             return splineContainer.Spline.GetLength();
         }
+
+        public void SpawnVehiclesAlongLane()
+        {
+            if (spawnCollection && Application.isPlaying)
+            {
+                // Skip start of lane and spawn vehicles along the lane
+                for (float dist = Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y); dist < Length; dist += Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y))
+                {
+                    int randomIndex = Random.Range(0, spawnCollection.prefabs.Length);
+                    GameObject vehicle = spawnCollection.prefabs[randomIndex];
+                    SpawnVehicle(vehicle, dist);
+                }
+            }            
+        }
         
-        public void SpawnVehicle(GameObject prefab, float distance)
+        private void SpawnVehicle(GameObject prefab, float distance)
         {
             Vector3 testPosition = GetRoutePosition(distance);
             RaycastHit[] hits = Physics.RaycastAll(testPosition + (Vector3.up * (terrainDetectionHeight * 0.5f)), Vector3.down, terrainDetectionHeight);
@@ -238,7 +243,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
             vehicleAi.SetTraveledDistance(distance);
             
             trafficInLane.Add(vehicleAi);
-            TrafficManager.Instance.spawnedVehicles.Add(spawnedVehicle);
         }
 
 #if UNITY_EDITOR

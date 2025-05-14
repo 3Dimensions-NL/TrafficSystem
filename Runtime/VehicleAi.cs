@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
@@ -124,6 +125,16 @@ namespace _3Dimensions.TrafficSystem.Runtime
             
             _startHeight = (_frontLeftOffset.y + _frontRightOffset.y + _rearLeftOffset.y + _rearRightOffset.y) / 4;
             AlignWithGround();
+        }
+
+        private void OnEnable()
+        {
+            if (TrafficManager.Instance == null) return;
+            if (TrafficManager.Instance.spawnedVehicles == null) return;
+            if (!TrafficManager.Instance.spawnedVehicles.Contains(gameObject))
+            {
+                TrafficManager.Instance.spawnedVehicles.Add(gameObject);
+            }
         }
 
         private void OnDestroy()
