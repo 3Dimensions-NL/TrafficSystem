@@ -200,7 +200,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         public void SpawnVehiclesAlongLane()
         {
-            if (spawnCollection && Application.isPlaying)
+            if (spawnCollection && Application.isPlaying && gameObject.activeInHierarchy)
             {
                 // Skip start of lane and spawn vehicles along the lane
                 for (float dist = Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y); dist < Length; dist += Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y))
