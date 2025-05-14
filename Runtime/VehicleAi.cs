@@ -95,6 +95,23 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 }
             }
             
+            // Assign wheels and determine offsets
+            CategorizeAndAssignWheels();
+
+            // Calculate offsets for wheel heights in local space
+            if (_farthestFrontLeftWheel) _frontLeftOffset = transform.InverseTransformPoint(_farthestFrontLeftWheel.transform.position);
+            if (_farthestFrontRightWheel) _frontRightOffset = transform.InverseTransformPoint(_farthestFrontRightWheel.transform.position);
+            if (_farthestRearLeftWheel) _rearLeftOffset = transform.InverseTransformPoint(_farthestRearLeftWheel.transform.position);
+            if (_farthestRearRightWheel) _rearRightOffset = transform.InverseTransformPoint(_farthestRearRightWheel.transform.position);
+
+            // Define the ground detection height for wheels
+            if (_farthestFrontLeftWheel)  _farthestFrontLeftWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+            if (_farthestFrontRightWheel)  _farthestFrontRightWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+            if (_farthestRearLeftWheel)  _farthestRearLeftWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+            if (_farthestRearRightWheel)  _farthestRearRightWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+            
+            _startHeight = (_frontLeftOffset.y + _frontRightOffset.y + _rearLeftOffset.y + _rearRightOffset.y) / 4;
+            
             if (debug) Debug.Log("Position on Awake = " + transform.position);
         }
 
@@ -113,23 +130,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 Debug.LogWarning("No wheels assigned to the vehicle; cannot align with ground.", this);
                 return;
             }
-
-            // Assign wheels and determine offsets
-            CategorizeAndAssignWheels();
-
-            // Calculate offsets for wheel heights in local space
-            if (_farthestFrontLeftWheel) _frontLeftOffset = transform.InverseTransformPoint(_farthestFrontLeftWheel.transform.position);
-            if (_farthestFrontRightWheel) _frontRightOffset = transform.InverseTransformPoint(_farthestFrontRightWheel.transform.position);
-            if (_farthestRearLeftWheel) _rearLeftOffset = transform.InverseTransformPoint(_farthestRearLeftWheel.transform.position);
-            if (_farthestRearRightWheel) _rearRightOffset = transform.InverseTransformPoint(_farthestRearRightWheel.transform.position);
-
-            if (_farthestFrontLeftWheel)  _farthestFrontLeftWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
-            if (_farthestFrontRightWheel)  _farthestFrontRightWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
-            if (_farthestRearLeftWheel)  _farthestRearLeftWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
-            if (_farthestRearRightWheel)  _farthestRearRightWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
-
             
-            _startHeight = (_frontLeftOffset.y + _frontRightOffset.y + _rearLeftOffset.y + _rearRightOffset.y) / 4;
             AlignWithGround();
         }
 
