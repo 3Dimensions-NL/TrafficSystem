@@ -62,8 +62,9 @@ namespace _3Dimensions.TrafficSystem.Runtime
             }
 
             // Cast a ray to detect the ground directly below the wheel
-            Ray ray = new Ray(transform.position, -transform.up);
-            if (Physics.Raycast(ray, out RaycastHit hit, groundDetectionDistance))
+            Vector3 rayOrigin = transform.position + new Vector3(0, -groundDetectionDistance, 0);
+            Ray ray = new Ray(rayOrigin, -transform.up);
+            if (Physics.Raycast(ray, out RaycastHit hit, groundDetectionDistance * 2))
             {
                 // Set the wheel's position based on the ground height plus its radius
                 float targetHeight = hit.point.y + wheelRadius;
