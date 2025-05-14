@@ -20,11 +20,13 @@ namespace _3Dimensions.TrafficSystem.Runtime
         private VehicleAi _vehicleAi;
         private Quaternion _oldSteering;
         private Vector3 _oldPos;
+        private Vector3 _localStartPos;
         
         // Start is called before the first frame update
         void Start()
         {
             _oldPos = transform.position;
+            _localStartPos = transform.localPosition;
             _vehicleAi = GetComponentInParent<VehicleAi>();
             wheelMeshParentTransform.SetParent(transform);
 
@@ -69,6 +71,10 @@ namespace _3Dimensions.TrafficSystem.Runtime
                 // Set the wheel's position based on the ground height plus its radius
                 float targetHeight = hit.point.y + wheelRadius;
                 transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
+            }
+            else
+            {
+                transform.localPosition = _localStartPos;
             }
 
             Vector3 displacement = transform.position - _oldPos;
