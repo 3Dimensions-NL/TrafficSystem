@@ -36,10 +36,29 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (Application.isPlaying)
             {
                 if (laneToSpawnIn)
+                { 
+                    StartCoroutine(SpawnVehicleRoutine());
+                }
+            }
+        }
+
+        private void Start()
+        {
+            if (Application.isPlaying)
+            {
+                if (laneToSpawnIn)
                 {
                     if (spawnAtStart)
                     {
-                        StartCoroutine(SpawnVehicleRoutine());
+                        if (canSpawn)
+                        {
+                            if (TrafficManager.Instance.spawnedVehicles.Count < TrafficManager.Instance.spawnLimit)
+                            {
+                                GameObject newVehicle =
+                                    spawnCollection.prefabs[Random.Range(0, spawnCollection.prefabs.Length)];
+                                SpawnVehicle(newVehicle);
+                            }
+                        }
                     }
                 }
             }

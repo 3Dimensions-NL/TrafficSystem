@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 namespace _3Dimensions.TrafficSystem.Runtime
 {
@@ -22,6 +23,11 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
         public float gizmosScale = 2;
         public float gizmosHeight = 1;
+
+        private void Awake()
+        {
+            spawnedVehicles.Clear();
+        }
 
         private void OnDisable()
         {

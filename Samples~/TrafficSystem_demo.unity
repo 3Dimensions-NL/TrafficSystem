@@ -565,7 +565,32 @@ MonoBehaviour:
   blockCooldownTime: 1
   blockersToIgnore: []
   blockedByLanes: []
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &137777506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1128,7 +1153,7 @@ MonoBehaviour:
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
-  maxSpawnTime: 15
+  maxSpawnTime: 5
   terrainDetectionHeight: 50
   startState: 1
   onSpawn:
@@ -1311,7 +1336,32 @@ MonoBehaviour:
   - {fileID: 1539689448}
   - {fileID: 1993935179}
   - {fileID: 855076818}
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &376356611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1539,7 +1589,32 @@ MonoBehaviour:
   blockCooldownTime: 1
   blockersToIgnore: []
   blockedByLanes: []
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &431406663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1726,6 +1801,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &451715555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2071,7 +2150,32 @@ MonoBehaviour:
   - {fileID: 519788737}
   - {fileID: 1539689448}
   - {fileID: 855076818}
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &498169355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2258,6 +2362,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &519788738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2558,7 +2666,27 @@ MonoBehaviour:
   - {fileID: 519788737}
   - {fileID: 1539689448}
   - {fileID: 1993935179}
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &583315035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3096,7 +3224,32 @@ MonoBehaviour:
   - {fileID: 855076818}
   - {fileID: 519788737}
   - {fileID: 1993935179}
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &789217600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3252,7 +3405,7 @@ MonoBehaviour:
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
-  maxSpawnTime: 15
+  maxSpawnTime: 5
   terrainDetectionHeight: 50
   startState: 1
   onSpawn:
@@ -3400,7 +3553,7 @@ MonoBehaviour:
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
-  maxSpawnTime: 15
+  maxSpawnTime: 5
   terrainDetectionHeight: 50
   startState: 1
   onSpawn:
@@ -3534,6 +3687,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &855076819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3810,6 +3967,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!4 &878315385
 Transform:
   m_ObjectHideFlags: 0
@@ -4496,6 +4657,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &1012499661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4879,7 +5044,7 @@ MonoBehaviour:
   - {fileID: 498169354}
   - {fileID: 583315034}
   - {fileID: 789217599}
-  lastPosition: {x: 0, y: 15.14, z: 0}
+  lastPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1069873545
 GameObject:
   m_ObjectHideFlags: 0
@@ -4989,6 +5154,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &1097273464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5450,7 +5619,7 @@ MonoBehaviour:
   spawnAtStart: 1
   spawnContinuously: 1
   minSpawnTime: 2
-  maxSpawnTime: 15
+  maxSpawnTime: 5
   terrainDetectionHeight: 50
   startState: 1
   onSpawn:
@@ -6361,6 +6530,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &1539689449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6788,7 +6961,32 @@ MonoBehaviour:
   blockCooldownTime: 1
   blockersToIgnore: []
   blockedByLanes: []
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &1691335239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7349,6 +7547,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!1 &1767446758
 GameObject:
   m_ObjectHideFlags: 0
@@ -7595,6 +7797,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &1824788454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7844,6 +8050,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &1853234460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8026,7 +8236,32 @@ MonoBehaviour:
   blockCooldownTime: 1
   blockersToIgnore: []
   blockedByLanes: []
-  trafficInLane: []
+  trafficInLane:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnCollection: {fileID: 11400000, guid: 00ab7f32f074cc74a90c8f5123b897f1, type: 2}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 20, y: 30}
+  terrainDetectionHeight: 50
 --- !u!114 &1860941252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8438,6 +8673,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &1943516936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8641,7 +8880,170 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnLimit: 20
-  spawnedVehicles: []
+  spawnedVehicles:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   autoLaneConnectDistance: 1.5
   gizmosScale: 2
   gizmosHeight: 1
@@ -9029,6 +9431,10 @@ MonoBehaviour:
   blockersToIgnore: []
   blockedByLanes: []
   trafficInLane: []
+  spawnCollection: {fileID: 0}
+  spawnTag: Traffic
+  spawnDistanceAlongSpline: {x: 30, y: 40}
+  terrainDetectionHeight: 50
 --- !u!114 &1993935180
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
+
 namespace _3Dimensions.TrafficSystem.Runtime
 {
     [ExecuteAlways]
@@ -31,11 +33,32 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public List<TrafficLane> blockedByLanes = new List<TrafficLane>();
         public List<VehicleAi> trafficInLane = new List<VehicleAi>();
 
+        [Header("Spawning on start")] 
+        public TrafficSpawnCollection spawnCollection;
+        public string spawnTag = "Traffic";
+
+        [Tooltip("Distance between vehicles when spawning multiple vehicles at lane start")]
+        public Vector2 spawnDistanceAlongSpline = new Vector2(30, 40);
+        public float terrainDetectionHeight = 50;
         private void Awake()
         {
             CollectWaypoints();
             GenerateSpline();
             Length = CalculatedLength();
+        }
+
+        private void Start()
+        {
+            if (spawnCollection && Application.isPlaying)
+            {
+                // Skip start of lane and spawn vehicles along the lane
+                for (float dist = Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y); dist < Length; dist += Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y))
+                {
+                    int randomIndex = Random.Range(0, spawnCollection.prefabs.Length);
+                    GameObject vehicle = spawnCollection.prefabs[randomIndex];
+                    SpawnVehicle(vehicle, dist);
+                }
+            }
         }
 
         // Update is called once per frame
@@ -183,6 +206,40 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (splineContainer.Spline == null) return 0;
             return splineContainer.Spline.GetLength();
         }
+        
+        public void SpawnVehicle(GameObject prefab, float distance)
+        {
+            Vector3 testPosition = GetRoutePosition(distance);
+            RaycastHit[] hits = Physics.RaycastAll(testPosition + (Vector3.up * (terrainDetectionHeight * 0.5f)), Vector3.down, terrainDetectionHeight);
+            RaycastHit? firstTrafficSurfaceHit = hits.FirstOrDefault(hit => hit.collider.GetComponent<TrafficSurface>() != null);
+
+            if (!firstTrafficSurfaceHit.Value.collider)
+            {
+                Debug.LogWarning("Could not spawn vehicle, no TrafficSurface found.", this);
+                return;
+            }
+
+            Vector3 startPosition = firstTrafficSurfaceHit.Value.point;
+            Vector3 startDirectionPosition = GetRoutePosition(distance + 1);
+            Quaternion startRotation = Quaternion.LookRotation(startDirectionPosition - testPosition);
+            
+            GameObject spawnedVehicle = Instantiate(prefab, startPosition, startRotation);
+            spawnedVehicle.tag = spawnTag;
+            spawnedVehicle.name = spawnedVehicle.name + "(lane started)";
+            
+            //Route setup
+            TrafficRoute route = spawnedVehicle.GetComponent<TrafficRoute>();
+            route.CalculateRoute(this);
+                
+            //AI Setup
+            VehicleAi vehicleAi = spawnedVehicle.GetComponent<VehicleAi>();
+            vehicleAi.currentSpeed = speed;
+            vehicleAi.targetVehicleState = VehicleAi.VehicleState.Driving;
+            vehicleAi.SetTraveledDistance(distance);
+            
+            trafficInLane.Add(vehicleAi);
+            TrafficManager.Instance.spawnedVehicles.Add(spawnedVehicle);
+        }
 
 #if UNITY_EDITOR
         public void ReverseLane()
@@ -261,6 +318,19 @@ namespace _3Dimensions.TrafficSystem.Runtime
                                 0.1f * TrafficManager.Instance.gizmosScale);
                         }
                     }
+                }
+            }
+            
+            if (spawnCollection)
+            {
+                GenerateSpline();
+                Length = CalculatedLength();
+                
+                // Skip start of lane and spawn vehicles along the lane
+                for (float dist = Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y); dist < Length; dist += Random.Range(spawnDistanceAlongSpline.x, spawnDistanceAlongSpline.y))
+                {
+                    RoutePoint next = GetRoutePoint(dist);
+                    Gizmos.DrawSphere(next.Position, 0.5f * TrafficManager.Instance.gizmosScale);
                 }
             }
         }

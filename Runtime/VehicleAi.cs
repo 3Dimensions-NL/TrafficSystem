@@ -102,7 +102,6 @@ namespace _3Dimensions.TrafficSystem.Runtime
         {
             _lastRotation = transform.rotation;
             _lastPosition = transform.position;
-            _traveledDistance = 0;
             
             SimulationMode = Physics.simulationMode;
             
@@ -214,6 +213,11 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (targetVehicleState == VehicleState.ChangingLanes) return VehicleState.ChangingLanes; //todo: workout lane changes
             if (CurrentLane.blocked) return VehicleState.Blocked;
             return targetVehicleState;
+        }
+
+        public void SetTraveledDistance(float distance)
+        {
+            _traveledDistance = distance;
         }
 
         private void HandleCarState()
