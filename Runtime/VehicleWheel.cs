@@ -64,18 +64,50 @@ namespace _3Dimensions.TrafficSystem.Runtime
             }
 
             // Cast a ray to detect the ground directly below the wheel
-            Vector3 rayOrigin = transform.position + new Vector3(0, -groundDetectionDistance, 0);
-            Ray ray = new Ray(rayOrigin, -transform.up);
-            if (Physics.Raycast(ray, out RaycastHit hit, groundDetectionDistance * 2))
+            Ray groundRay = new Ray(transform.position + (Vector3.up * groundDetectionDistance), Vector3.down);
+            RaycastHit[] hits = Physics.RaycastAll(groundRay, groundDetectionDistance * 2);
+
+            RaycastHit? nearestValidHit = null;
+            float nearestDistance = float.MaxValue;
+
+            foreach (var hit in hits)
             {
-                // Set the wheel's position based on the ground height plus its radius
-                float targetHeight = hit.point.y + wheelRadius;
+                if (hit.collider.GetComponent<TrafficSurface>())
+                {
+                    float distance = Vector3.Distance(transform.position, hit.point);
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestValidHit = hit;
+                    }
+                }
+            }
+            
+            // If we found a valid hit, adjust the position
+            if (nearestValidHit.HasValue)
+            {
+                float targetHeight = nearestValidHit.Value.point.y + wheelRadius;
                 transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
             }
             else
             {
+                Debug.LogError("Could not find a valid TrafficSurface for alignment.", this);
                 transform.localPosition = _localStartPos;
             }
+            
+            // Vector3 rayOrigin = transform.position + new Vector3(0, -groundDetectionDistance, 0);
+            // RaycastHit? hit == null;
+            // Ray ray = new Ray(rayOrigin, -transform.up);
+            // if (Physics.Raycast(ray, out hit, groundDetectionDistance * 2))
+            // {
+            //     // Set the wheel's position based on the ground height plus its radius
+            //     float targetHeight = hit.point.y + wheelRadius;
+            //     transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
+            // }
+            // else
+            // {
+            //     transform.localPosition = _localStartPos;
+            // }
 
             Vector3 displacement = transform.position - _oldPos;
             float speed = displacement.magnitude / Time.deltaTime;
