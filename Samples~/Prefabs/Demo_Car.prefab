@@ -134,7 +134,7 @@ MonoBehaviour:
   invertRotation: 0
   wheelRadius: 0.5
   steering: 0
-  steeringFactor: 0.8
+  steeringFactor: 0.1
   steeringMaxAngle: 45
 --- !u!1 &913945398358593687
 GameObject:
@@ -770,7 +770,7 @@ MonoBehaviour:
   invertRotation: 0
   wheelRadius: 0.5
   steering: 1
-  steeringFactor: 0.8
+  steeringFactor: 0.1
   steeringMaxAngle: 45
 --- !u!1 &4861290978727702746
 GameObject:
@@ -938,7 +938,7 @@ MonoBehaviour:
   invertRotation: 0
   wheelRadius: 0.5
   steering: 0
-  steeringFactor: 0.8
+  steeringFactor: 0.1
   steeringMaxAngle: 45
 --- !u!1 &6636678486745235686
 GameObject:
@@ -1022,7 +1022,7 @@ MonoBehaviour:
   invertRotation: 0
   wheelRadius: 0.5
   steering: 1
-  steeringFactor: 0.8
+  steeringFactor: 0.1
   steeringMaxAngle: 45
 --- !u!1 &7825219177663408965
 GameObject:
@@ -1252,9 +1252,9 @@ MonoBehaviour:
   collisionDiameter: 0.5
   stoppingDistance: 2
   detectionHeight: 1
-  trafficSurfaceDetectionHeight: 1
+  trafficSurfaceDetectionHeight: 4
   modelTransform: {fileID: 0}
-  modelAligningSpeed: 10
+  modelAligningSpeed: 60
   simulate: 1
   debug: 0
 --- !u!114 &5910587107572792632

@@ -14,6 +14,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
         public bool steering;
         public float steeringFactor = 0.8f;
         public float steeringMaxAngle = 45;
+
+        public float groundDetectionDistance = 10;
         
         private VehicleAi _vehicleAi;
         private Quaternion _oldSteering;
@@ -61,7 +63,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
 
             // Cast a ray to detect the ground directly below the wheel
             Ray ray = new Ray(transform.position, -transform.up);
-            if (Physics.Raycast(ray, out RaycastHit hit, wheelRadius * 2))
+            if (Physics.Raycast(ray, out RaycastHit hit, groundDetectionDistance))
             {
                 // Set the wheel's position based on the ground height plus its radius
                 float targetHeight = hit.point.y + wheelRadius;

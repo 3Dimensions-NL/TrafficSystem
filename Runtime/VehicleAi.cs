@@ -122,6 +122,12 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (_farthestFrontRightWheel) _frontRightOffset = transform.InverseTransformPoint(_farthestFrontRightWheel.transform.position);
             if (_farthestRearLeftWheel) _rearLeftOffset = transform.InverseTransformPoint(_farthestRearLeftWheel.transform.position);
             if (_farthestRearRightWheel) _rearRightOffset = transform.InverseTransformPoint(_farthestRearRightWheel.transform.position);
+
+            if (_farthestFrontLeftWheel)  _farthestFrontLeftWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+            if (_farthestFrontRightWheel)  _farthestFrontRightWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+            if (_farthestRearLeftWheel)  _farthestRearLeftWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+            if (_farthestRearRightWheel)  _farthestRearRightWheel.groundDetectionDistance = trafficSurfaceDetectionHeight;
+
             
             _startHeight = (_frontLeftOffset.y + _frontRightOffset.y + _rearLeftOffset.y + _rearRightOffset.y) / 4;
             AlignWithGround();
@@ -477,13 +483,13 @@ namespace _3Dimensions.TrafficSystem.Runtime
             // If we found a valid hit, adjust the position
             if (nearestValidHit.HasValue)
             {
-                Vector3 pos = transform.position;
-                pos.y = nearestValidHit.Value.point.y;
-                transform.position = Vector3.Lerp(transform.position, pos, _deltaTime * modelAligningSpeed);
+                // Vector3 pos = new Vector3(transform.position.x, nearestValidHit.Value.point.y, transform.position.z);
+                // transform.position = pos;
             }
             else
             {
                 Debug.LogError("Could not find a valid TrafficSurface for alignment.", this);
+                return;
             }
 
             // Ensure wheels exist
@@ -507,12 +513,14 @@ namespace _3Dimensions.TrafficSystem.Runtime
             float averageRightHeight = (frontRightHeight + rearRightHeight) / 2;
 
             // Step 3: Adjust the model's position based on wheel average height
-            float averageHeight = ((averageFrontHeight + averageRearHeight) / 2) - transform.position.y;
+            float averageHeight = ((averageFrontHeight + averageRearHeight) / 2);
             if (debug) Debug.Log("Average height = " + averageHeight);
             averageHeight -= _startHeight;
-            Vector3 localPosition = modelTransform.localPosition;
-            localPosition.y = Mathf.Lerp(localPosition.y, averageHeight, _deltaTime * modelAligningSpeed); // Offset for the root object
-            modelTransform.localPosition = localPosition;
+            modelTransform.position = Vector3.Lerp(modelTransform.position, new Vector3(modelTransform.position.x, averageHeight, modelTransform.position.z), _deltaTime * modelAligningSpeed);
+            
+            // Vector3 localPosition = modelTransform.localPosition;
+            // localPosition.y = Mathf.Lerp(modelTransform.localPosition.y, averageHeight, _deltaTime * modelAligningSpeed); // Offset for the root object
+            // modelTransform.localPosition = localPosition;
 
             // Step 4: Calculate pitch (front-to-back tilt)
             float pitchAngle = -Mathf.Atan2(averageFrontHeight - averageRearHeight, _frontLeftOffset.z - _rearLeftOffset.z) * Mathf.Rad2Deg;
