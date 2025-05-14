@@ -64,8 +64,8 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (Physics.Raycast(ray, out RaycastHit hit, wheelRadius * 2))
             {
                 // Set the wheel's position based on the ground height plus its radius
-                Vector3 targetPosition = hit.point + (transform.up * wheelRadius);
-                transform.position = targetPosition;
+                float targetHeight = hit.point.y + wheelRadius;
+                transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
             }
 
             Vector3 displacement = transform.position - _oldPos;
