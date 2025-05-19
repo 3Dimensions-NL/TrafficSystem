@@ -155,7 +155,7 @@ namespace _3Dimensions.TrafficSystem.Runtime
             if (_lastLane) _lastLane.trafficInLane.Remove(this);
         }
 
-        void Update()
+        void LateUpdate()
         {
             if (!simulate) return;
             if (SimulationMode == SimulationMode.Update)
